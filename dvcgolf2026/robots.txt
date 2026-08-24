@@ -1,0 +1,3 @@
+# Tournament site for 40 named participants. Not for search engines.
+User-agent: *
+Disallow: /

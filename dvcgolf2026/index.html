@@ -1,0 +1,2551 @@
+<meta charset="utf-8">
+<title>DMV vs Charlotte</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="DMV vs Charlotte Annual Golf Tournament, Year Three. September 11 to 13, 2026.">
+
+<!-- This page carries 40 people's names, handicaps and mobile numbers.
+     Anyone with the link can read it, but it should not turn up in a Google
+     search for someone's name. Keep this tag. See also robots.txt. -->
+<meta name="robots" content="noindex, nofollow">
+
+<style>
+/* ============================================================
+   DMV vs CHARLOTTE — YEAR THREE
+   Single-file tournament site. No frameworks, no build step.
+
+   PALETTE      deep turf green ground, antique gold accent,
+                warm scorecard paper for everything read in sunlight.
+   MOTIF        the yardage book: hairline rules, boxed hole numbers.
+   TEAM COLOUR  DMV = green, CHARLOTTE = gold. Consistent everywhere.
+   ============================================================ */
+
+:root{
+  /* --- ground + surfaces --- */
+  --turf-deep:#061A11;
+  --turf:#0B2E1F;
+  --fairway:#123F2C;
+  --fairway-line:#1E6B4D;
+  --paper:#F7F4EB;
+  --paper-alt:#EFEADB;
+  --paper-line:#DCD5C3;
+
+  /* --- accent --- */
+  --gold:#C8A44D;
+  --gold-bright:#E7CC80;
+  --gold-deep:#9C7C2E;
+
+  /* --- ink --- */
+  --ink:#15201A;
+  --ink-soft:#5C6A61;
+  --ink-faint:#8D978F;
+  --on-turf:#EDE9DC;
+  --on-turf-soft:#9DB0A4;
+
+  /* --- teams --- */
+  --dmv:#0B2E1F;
+  --dmv-on-dark:#7FD1A5;
+  --clt:#9C7C2E;
+  --clt-on-dark:#E7CC80;
+
+  /* --- semantic --- */
+  --live:#C8442A;
+  --live-soft:#F3DED8;
+
+  /* --- type --- */
+  --display:"Arial Narrow","Helvetica Neue Condensed","Roboto Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+
+  /* --- metrics --- */
+  --pad:20px;
+  --max:920px;
+  --nav-h:52px;
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 8px);}
+body{
+  margin:0;
+  font-family:var(--body);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{animation:none!important;transition:none!important;}
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:2px;}
+
+/* ---------- shared type ---------- */
+.eyebrow{
+  font-family:var(--display);
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  font-size:12px;
+  font-weight:700;
+  color:var(--ink-soft);
+  margin:0 0 6px;
+}
+.eyebrow.on-dark{color:var(--gold);}
+h2.sec-title{
+  font-family:var(--display);
+  text-transform:uppercase;
+  font-size:clamp(30px,8vw,44px);
+  line-height:.94;
+  letter-spacing:-.005em;
+  font-weight:700;
+  margin:0 0 4px;
+  text-wrap:balance;
+}
+h3.blk-title{
+  font-family:var(--display);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  font-size:19px;
+  font-weight:700;
+  margin:0 0 10px;
+}
+.lede{color:var(--ink-soft);margin:0 0 20px;max-width:62ch;}
+#friday .lede,#weather .lede,#contributions .lede{max-width:none;}
+.num{font-variant-numeric:tabular-nums;}
+
+/* ---------- placeholder marker ---------- */
+/* Anything wrapped in .ph is invented content awaiting the host's real
+   answer. Search this file for "ph" or "TO CONFIRM" to find them all. */
+/* Placeholder text is INVISIBLE to participants by default — the site should
+   read clean. Add ?review to the address to light every unconfirmed value up,
+   which is how we check nothing invented has been left in. */
+.ph{--ph-tint:rgba(200,68,42,.22);}
+html[data-review] .ph{
+  background:linear-gradient(transparent 64%, var(--ph-tint) 64%);
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+}
+html[data-review] .sec-turf .ph,
+html[data-review] .leaveby .ph,
+html[data-review] .hero .ph{--ph-tint:rgba(231,204,128,.34);}
+
+/* "to confirm" stays visible — a golfer genuinely needs to know it is not
+   settled yet. Muted, though. It is a note, not an error. */
+.tbc{
+  display:inline-block;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:10.5px;font-weight:700;
+  color:var(--gold-deep);
+  background:rgba(200,164,77,.13);
+  border-radius:3px;
+  padding:2px 7px;
+  vertical-align:1px;
+}
+.sec-turf .tbc, .leaveby .tbc{color:var(--gold-bright);background:rgba(231,204,128,.16);}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav{
+  position:sticky;top:0;z-index:60;
+  background:var(--turf-deep);
+  border-bottom:1px solid rgba(200,164,77,.28);
+  height:var(--nav-h);
+  display:flex;align-items:center;
+}
+.nav-inner{
+  width:100%;max-width:var(--max);margin:0 auto;
+  display:flex;align-items:center;gap:12px;
+  padding:0 var(--pad);
+}
+.nav-mark{
+  display:flex;align-items:center;gap:6px;flex:none;
+  font-family:var(--display);text-transform:uppercase;
+  font-size:14px;font-weight:700;letter-spacing:.06em;
+  color:var(--gold);text-decoration:none;
+}
+.nav-mark .vs{color:var(--on-turf-soft);font-size:11px;}
+/* ---- inline links: desktop only ---- */
+.nav-links{display:none;}
+.nav-links a{
+  flex:none;text-decoration:none;
+  font-family:var(--display);text-transform:uppercase;
+  font-size:13px;font-weight:700;letter-spacing:.07em;
+  color:var(--on-turf-soft);
+  padding:7px 9px;border-radius:3px;white-space:nowrap;
+}
+.nav-links a:hover{color:var(--gold-bright);background:rgba(255,255,255,.06);}
+.nav-links a[aria-current="true"]{color:var(--gold);}
+@media (min-width:880px){
+  .nav-links{display:flex;gap:1px;margin-left:auto;}
+}
+
+/* ---- hamburger button: phones and tablets ---- */
+.burger{
+  margin-left:auto;flex:none;
+  width:44px;height:44px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  background:transparent;border:0;cursor:pointer;padding:0;
+}
+.burger i{
+  display:block;width:22px;height:2px;background:var(--gold);border-radius:2px;
+  transition:transform .22s ease, opacity .18s ease;
+}
+.burger[aria-expanded="true"] i:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.burger[aria-expanded="true"] i:nth-child(2){opacity:0;}
+.burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ---- slide-down menu panel ---- */
+.menu{
+  position:fixed;inset:var(--nav-h) 0 auto 0;z-index:55;
+  background:var(--turf-deep);
+  border-bottom:1px solid rgba(200,164,77,.3);
+  max-height:calc(100vh - var(--nav-h));overflow-y:auto;
+  transform:translateY(-102%);
+  transition:transform .26s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
+}
+.menu[data-open="true"]{transform:translateY(0);}
+.menu-inner{max-width:var(--max);margin:0 auto;padding:10px var(--pad) 22px;}
+.menu a{
+  display:flex;align-items:baseline;gap:12px;
+  text-decoration:none;color:var(--on-turf);
+  padding:14px 4px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.menu a:last-of-type{border-bottom:0;}
+.menu a b{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;
+  font-size:21px;font-weight:700;flex:none;min-width:118px;
+}
+.menu a span{font-size:13px;color:var(--on-turf-soft);}
+.menu a:hover b, .menu a[aria-current="true"] b{color:var(--gold-bright);}
+.menu a[aria-current="true"]{background:rgba(200,164,77,.08);}
+.scrim{
+  position:fixed;inset:0;z-index:50;background:rgba(6,26,17,.6);
+  opacity:0;pointer-events:none;transition:opacity .26s ease;
+}
+.scrim[data-open="true"]{opacity:1;pointer-events:auto;}
+
+/* On a wide screen the inline links take over: no burger, and the phone menu
+   can never be left hanging open. Declared after the rules it overrides. */
+@media (min-width:880px){
+  .burger{display:none;}
+  .menu,.scrim{display:none;}
+}
+
+/* ---- back to top ---- */
+.totop{
+  position:fixed;right:16px;bottom:16px;z-index:45;
+  width:48px;height:48px;border-radius:50%;
+  background:var(--turf);color:var(--gold-bright);
+  border:1px solid rgba(200,164,77,.45);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;padding:0;
+  box-shadow:0 6px 20px rgba(6,26,17,.35);
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.totop[data-show="true"]{opacity:1;transform:translateY(0);pointer-events:auto;}
+.totop:hover{background:var(--fairway);}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  background:var(--turf);
+  color:var(--on-turf);
+  padding:48px var(--pad) 42px;
+  position:relative;overflow:hidden;
+  isolation:isolate;
+}
+/* layer 0 — the background picture */
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.hero-bg svg, .hero-bg img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+/* a real photograph drops in on top of the drawn one and stays translucent
+   so the type never has to fight it */
+.hero-bg img{opacity:.34;filter:saturate(.8) contrast(1.05);}
+/* layer 1 — scrim, guarantees the headline stays readable over any photo */
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    /* darkens the top band, where the flags and headline sit */
+    linear-gradient(180deg, rgba(6,26,17,.82) 0%, rgba(6,26,17,.30) 44%, rgba(6,26,17,.55) 100%),
+    /* and the left, where the type runs */
+    linear-gradient(100deg, rgba(8,34,23,.66) 0%, rgba(8,34,23,.26) 52%, rgba(8,34,23,.04) 100%);
+}
+/* layer 2 — faint yardage-book grid */
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:34px 34px;
+}
+.hero-inner{max-width:var(--max);margin:0 auto;position:relative;z-index:3;}
+.flags{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+/* Nepal's flag is a tall narrow pennant — sized up so the pair reads evenly */
+.flags svg{width:auto;display:block;}
+.flags .f-np{height:34px;}
+.flags .f-us{height:24px;}
+.flags span{
+  font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.18em;font-size:11px;font-weight:700;color:var(--gold);
+}
+.hero h1{
+  font-family:var(--display);
+  text-transform:uppercase;
+  font-size:clamp(29px,7.4vw,76px);
+  line-height:1;
+  letter-spacing:-.01em;
+  font-weight:700;
+  margin:0;
+  color:#fff;
+  white-space:nowrap;
+}
+.hero h1 .vs{
+  font-size:.52em;
+  color:var(--gold);
+  letter-spacing:.05em;
+  margin:0 .1em;
+}
+.hero h1 .yr{
+  font-size:.64em;
+  color:var(--gold);
+  letter-spacing:.03em;
+  margin-left:.16em;
+}
+.hero-sub{
+  font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.14em;font-size:clamp(12px,3.4vw,15px);font-weight:700;
+  color:var(--gold-bright);
+  margin:18px 0 0;
+}
+.hero-year{
+  font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.2em;font-size:clamp(11px,3vw,13px);font-weight:700;
+  color:var(--on-turf-soft);
+  margin:6px 0 0;
+}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:8px 22px;
+  margin-top:16px;
+  border-top:1px solid rgba(200,164,77,.32);
+  padding-top:16px;
+  font-size:14px;color:var(--on-turf-soft);
+}
+.hero-meta b{color:var(--on-turf);font-weight:600;}
+
+/* countdown */
+.countdown{
+  display:flex;gap:8px;margin-top:22px;
+}
+.cd-cell{
+  flex:1;max-width:88px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(200,164,77,.22);
+  border-radius:4px;
+  padding:9px 4px 7px;
+  text-align:center;
+}
+.cd-cell b{
+  display:block;font-family:var(--display);font-weight:700;
+  font-size:clamp(24px,7vw,32px);line-height:1;color:#fff;
+  font-variant-numeric:tabular-nums;
+}
+.cd-cell span{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.12em;font-size:10px;color:var(--on-turf-soft);margin-top:4px;
+}
+/* once play starts the same strip becomes the live score */
+.cd-cell.score{max-width:none;flex:1;padding:11px 8px 9px;}
+.cd-cell.score b{font-size:clamp(38px,12vw,52px);}
+.cd-cell.score.dmv{border-color:rgba(127,209,165,.45);}
+.cd-cell.score.dmv b{color:var(--dmv-on-dark);}
+.cd-cell.score.clt{border-color:rgba(231,204,128,.45);}
+.cd-cell.score.clt b{color:var(--clt-on-dark);}
+.cd-cell.score span{letter-spacing:.14em;font-size:11px;}
+
+/* ============================================================
+   LATEST UPDATE BANNER   [LIVE]
+   ============================================================ */
+.update{
+  background:var(--gold);
+  color:#26200C;
+  padding:12px var(--pad);
+}
+.update-inner{
+  max-width:var(--max);margin:0 auto;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.update .tag{
+  flex:none;
+  font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.12em;font-size:11px;font-weight:700;
+  background:#26200C;color:var(--gold-bright);
+  padding:3px 7px;border-radius:2px;margin-top:1px;
+}
+.update p{margin:0;font-size:14.5px;line-height:1.4;}
+.update p b{display:block;font-size:12px;opacity:.72;font-weight:600;}
+
+/* ============================================================
+   SECTION FRAME
+   ============================================================ */
+section{padding:52px var(--pad);}
+@media (min-width:760px){section{padding:76px var(--pad);}}
+section > .wrap{max-width:var(--max);margin:0 auto;}
+.sec-paper{background:var(--paper);}
+.sec-paper-alt{background:var(--paper-alt);}
+.sec-turf{background:var(--turf);color:var(--on-turf);}
+.sec-turf h2.sec-title{color:#fff;}
+.sec-turf .lede{color:var(--on-turf-soft);}
+.sec-head{
+  border-top:2px solid var(--ink);
+  padding-top:12px;margin-bottom:22px;
+}
+.sec-turf .sec-head{border-top-color:var(--gold);}
+
+/* ============================================================
+   DASHBOARD   [LIVE]
+   ============================================================ */
+.cup{
+  background:var(--fairway);
+  border:1px solid var(--fairway-line);
+  border-radius:6px;
+  padding:18px 16px 16px;
+}
+.cup-status{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.11em;
+  font-size:11.5px;font-weight:700;color:var(--gold);margin-bottom:14px;
+}
+/* posting cadence note — results go up after each round, not during play */
+.cadence{
+  display:flex;gap:10px;align-items:flex-start;
+  margin-top:12px;padding:11px 13px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  border-left:3px solid var(--gold);
+  border-radius:4px;
+  font-size:13.5px;color:var(--on-turf-soft);line-height:1.45;
+}
+.cadence b{color:var(--on-turf);font-weight:600;}
+.cup-scores{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}
+.cup-side{flex:1;}
+.cup-side.right{text-align:right;}
+.cup-side .name{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:12px;font-weight:700;color:var(--on-turf-soft);
+}
+.cup-side .pts{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(42px,13vw,62px);line-height:.9;
+  font-variant-numeric:tabular-nums;
+}
+.cup-side.dmv .pts{color:var(--dmv-on-dark);}
+.cup-side.clt .pts{color:var(--clt-on-dark);}
+.cup-target{
+  flex:none;text-align:center;padding-bottom:6px;
+  font-family:var(--display);text-transform:uppercase;
+  font-size:10.5px;letter-spacing:.09em;color:var(--on-turf-soft);line-height:1.35;
+}
+.cup-target b{display:block;color:#fff;font-size:15px;}
+
+/* the meter */
+.meter{
+  position:relative;height:16px;margin-top:14px;
+  background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden;
+}
+.meter .fill-dmv{position:absolute;left:0;top:0;bottom:0;background:var(--dmv-on-dark);}
+.meter .fill-clt{position:absolute;right:0;top:0;bottom:0;background:var(--clt-on-dark);}
+.meter .mid{
+  position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;
+  background:#fff;transform:translateX(-1px);
+}
+.meter-legend{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--on-turf-soft);margin-top:7px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;
+}
+
+/* match chips */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px;}
+.chip{
+  width:26px;height:26px;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:700;font-size:12px;
+  font-variant-numeric:tabular-nums;
+}
+.chip.dmv{background:var(--dmv-on-dark);color:var(--turf-deep);}
+.chip.clt{background:var(--clt-on-dark);color:#3A2E0C;}
+.chip.halved{background:var(--on-turf-soft);color:var(--turf-deep);}
+.chip.pending{background:rgba(255,255,255,.08);color:var(--on-turf-soft);border:1px solid rgba(255,255,255,.14);}
+.chip-key{
+  display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;
+  font-size:11px;color:var(--on-turf-soft);
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;
+}
+.chip-key i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:0;}
+
+/* dashboard sub-panels */
+.panels{display:grid;gap:12px;margin-top:14px;}
+@media (min-width:700px){.panels{grid-template-columns:1fr 1fr;}}
+.panel{
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:5px;padding:14px;
+}
+.panel h4{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:11.5px;font-weight:700;color:var(--gold);margin:0 0 10px;
+}
+.lb{list-style:none;margin:0;padding:0;}
+.lb li{
+  display:flex;align-items:baseline;gap:9px;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:14px;
+}
+.lb li:last-child{border-bottom:0;}
+.lb .pos{
+  font-family:var(--display);font-weight:700;font-size:12px;
+  color:var(--on-turf-soft);width:16px;flex:none;font-variant-numeric:tabular-nums;
+}
+.lb .who{flex:1;}
+.lb .who em{font-style:normal;font-size:11px;color:var(--on-turf-soft);margin-left:5px;}
+.lb .val{font-family:var(--display);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;color:#fff;}
+.sp-row{
+  display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+  padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;
+}
+.sp-row:last-child{border-bottom:0;}
+.sp-row .lbl{color:var(--on-turf-soft);font-size:12px;}
+.sp-row .lbl b{display:block;color:var(--on-turf);font-size:13.5px;font-weight:600;}
+.sp-row .mark{text-align:right;}
+.sp-row .mark b{font-family:var(--display);font-weight:700;font-size:15px;color:var(--gold-bright);display:block;}
+.sp-row .mark span{font-size:11.5px;color:var(--on-turf-soft);}
+
+/* ============================================================
+   DAY CARDS
+   ============================================================ */
+.daycards{display:grid;gap:12px;}
+@media (min-width:760px){.daycards{grid-template-columns:repeat(3,1fr);}}
+.daycard{
+  display:block;text-decoration:none;color:inherit;
+  background:var(--paper);
+  border:1px solid var(--paper-line);
+  border-top:4px solid var(--turf);
+  border-radius:4px;
+  padding:16px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.daycard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(11,46,31,.12);}
+.daycard .dc-day{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.13em;
+  font-size:11.5px;font-weight:700;color:var(--gold-deep);
+}
+.daycard .dc-title{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:27px;font-weight:700;line-height:1;margin:5px 0 3px;
+}
+.daycard .dc-venue{font-size:14px;color:var(--ink-soft);margin:0 0 12px;}
+.daycard .dc-tee{
+  display:flex;align-items:baseline;gap:7px;
+  border-top:1px solid var(--paper-line);padding-top:10px;
+}
+.daycard .dc-tee span{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);font-family:var(--display);font-weight:700;}
+.daycard .dc-tee b{font-family:var(--display);font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;}
+.daycard .dc-go{
+  margin-top:10px;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.1em;font-size:12px;font-weight:700;color:var(--turf);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:46px;padding:0 18px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:14px;font-weight:700;
+  text-decoration:none;border-radius:4px;border:2px solid transparent;
+  cursor:pointer;
+}
+.btn-primary{background:var(--turf);color:#fff;}
+.btn-primary:hover{background:var(--fairway);}
+.btn-gold{background:var(--gold);color:#26200C;}
+.btn-gold:hover{background:var(--gold-bright);}
+.btn-ghost{background:transparent;color:var(--turf);border-color:var(--turf);}
+.btn-ghost:hover{background:var(--turf);color:#fff;}
+.btn-ghost-light{background:transparent;color:var(--gold-bright);border-color:var(--gold);}
+.btn-ghost-light:hover{background:var(--gold);color:#26200C;}
+.btn-row{display:flex;flex-wrap:wrap;gap:9px;}
+.btn-row .btn{flex:1 1 auto;min-width:150px;}
+
+/* ============================================================
+   IMAGE SLOTS  — replace the whole .imgslot div with an <img>
+   ============================================================ */
+/* Styled so the page looks composed before any photograph exists.
+   To use a real image, replace the whole div with <img src="..." alt="..."> */
+.imgslot{
+  position:relative;overflow:hidden;
+  aspect-ratio:16/9;border-radius:5px;border:0;
+  background:
+    radial-gradient(120% 95% at 80% 6%, rgba(231,204,128,.17), transparent 58%),
+    linear-gradient(166deg,#16523A 0%,#0E3826 55%,#071E14 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:20px;gap:9px;
+  color:var(--on-turf-soft);
+}
+.imgslot::after{ /* contour lines, like a yardage book */
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(112deg,rgba(255,255,255,.045) 0 1px,transparent 1px 16px);
+}
+.imgslot > *{position:relative;z-index:1;}
+/* a real photo, when the file exists, covers the placeholder entirely */
+.imgslot > img{
+  position:absolute;inset:0;z-index:2;
+  width:100%;height:100%;object-fit:cover;
+}
+.imgslot svg{opacity:.65;color:var(--gold);}
+.imgslot b{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.13em;
+  font-size:10.5px;font-weight:700;color:var(--gold-bright);
+  border:1px solid rgba(231,204,128,.45);border-radius:99px;
+  padding:3px 11px;
+}
+.imgslot span{font-size:12.5px;line-height:1.45;max-width:36ch;}
+.imgslot.tall{aspect-ratio:4/3;}
+.imgslot.wide{aspect-ratio:21/9;}
+@media (max-width:520px){.imgslot.wide{aspect-ratio:16/9;}}
+
+/* ============================================================
+   COURSE CARDS
+   ============================================================ */
+.courses{display:grid;gap:16px;}
+@media (min-width:760px){.courses{grid-template-columns:1fr 1fr;}}
+.course{
+  background:var(--paper);
+  border:1px solid var(--paper-line);
+  border-radius:5px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.course .body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;}
+.course .btn-row{margin-top:auto;}
+.course h4{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:23px;font-weight:700;line-height:1.02;margin:0;
+}
+.course .where{font-size:13.5px;color:var(--ink-soft);margin:3px 0 0;}
+.specs{
+  display:flex;flex-wrap:wrap;gap:0;
+  border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);
+}
+.specs div{
+  flex:1;min-width:52px;padding:9px 0;
+  border-right:1px solid var(--paper-line);
+}
+.specs div:last-child{border-right:0;flex:2.1;min-width:112px;padding-left:10px;}
+.specs div:last-child b{font-size:14px;line-height:1.22;}
+.specs span{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.1em;font-size:10px;color:var(--ink-faint);font-weight:700;
+}
+.specs b{
+  display:block;font-family:var(--display);font-size:19px;font-weight:700;
+  font-variant-numeric:tabular-nums;margin-top:1px;
+}
+.pick{
+  background:var(--paper-alt);border-left:3px solid var(--gold);
+  padding:10px 12px;font-size:14px;line-height:1.45;
+}
+.pick b{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.1em;font-size:11px;color:var(--gold-deep);margin-bottom:3px;
+}
+
+/* ============================================================
+   DAY DETAIL
+   ============================================================ */
+.leaveby{
+  background:var(--turf);color:#fff;
+  border-radius:5px;padding:16px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.leaveby .lb-txt{flex:1;min-width:180px;}
+.leaveby .lb-txt span{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.13em;font-size:11px;color:var(--gold);font-weight:700;
+}
+.leaveby .lb-txt b{
+  font-family:var(--display);font-size:clamp(32px,10vw,44px);font-weight:700;
+  line-height:1;display:block;margin-top:2px;font-variant-numeric:tabular-nums;
+}
+.leaveby .lb-txt em{font-style:normal;font-size:13px;color:var(--on-turf-soft);display:block;margin-top:5px;}
+
+.factgrid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border:1px solid var(--paper-line);border-radius:5px;overflow:hidden;
+}
+@media (min-width:620px){.factgrid{grid-template-columns:repeat(4,1fr);}}
+.factgrid div{
+  padding:12px;
+  border-right:1px solid var(--paper-line);
+  border-bottom:1px solid var(--paper-line);
+  background:var(--paper);
+}
+.factgrid span{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.1em;font-size:10px;color:var(--ink-faint);font-weight:700;margin-bottom:2px;
+}
+.factgrid b{font-family:var(--display);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;}
+.factgrid em{font-style:normal;font-size:13px;font-weight:600;}
+
+.formatbox{
+  border:2px solid var(--turf);border-radius:5px;padding:14px 16px;background:var(--paper);
+}
+.formatbox h4{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:12px;font-weight:700;color:var(--gold-deep);margin:0 0 8px;
+}
+.formatbox ol{margin:0;padding-left:19px;}
+.formatbox li{margin-bottom:5px;font-size:15px;}
+.formatbox li:last-child{margin-bottom:0;}
+
+/* prize holes strip — scorecard boxes */
+.holes{display:flex;flex-wrap:wrap;gap:9px;}
+.hole{
+  background:var(--paper);border:1px solid var(--paper-line);
+  border-radius:4px;padding:9px 11px;min-width:118px;flex:1 1 118px;
+}
+.hole .hn{
+  display:flex;align-items:center;gap:7px;margin-bottom:5px;
+}
+.hole .hn i{
+  width:27px;height:27px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--turf);color:#fff;border-radius:3px;
+  font-family:var(--display);font-weight:700;font-size:15px;font-style:normal;
+  font-variant-numeric:tabular-nums;
+}
+.hole .hn span{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;
+  font-size:10.5px;font-weight:700;color:var(--ink-faint);line-height:1.2;
+}
+.hole .hn span b{display:block;color:var(--ink);font-size:12px;}
+.hole .yd{font-size:12.5px;color:var(--ink-soft);}
+
+/* ============================================================
+   TABLES  →  stack into cards under 620px
+   ============================================================ */
+.tbl-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:10px;flex-wrap:wrap;margin-bottom:9px;
+}
+.stamp{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;
+  font-size:10.5px;font-weight:700;color:var(--ink-faint);
+}
+.sec-turf .stamp{color:var(--on-turf-soft);}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+/* ---- collapsible table blocks ---- */
+.foldout{margin-bottom:0;}
+.foldout > summary{padding:13px 15px;flex-wrap:wrap;}
+.foldout .fo-title{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;
+  font-size:18px;font-weight:700;
+}
+.foldout .fo-meta{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;
+  font-size:10.5px;font-weight:700;color:var(--ink-faint);
+  margin-left:auto;padding-right:8px;text-align:right;line-height:1.35;
+}
+.foldout .fo-meta b{display:block;color:var(--gold-deep);font-size:13px;letter-spacing:.04em;}
+.fo-body{padding:0 12px 14px;}
+/* fold-outs on the dark green ground */
+.sec-turf .foldout{
+  background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.13);
+}
+.sec-turf .foldout[open]{border-color:rgba(200,164,77,.42);}
+.sec-turf .foldout .fo-title{color:var(--on-turf);}
+.sec-turf .foldout .fo-meta{color:var(--on-turf-soft);}
+.sec-turf .foldout .fo-meta b{color:var(--gold-bright);}
+.sec-turf .foldout > summary::after{color:var(--gold);}
+.filter{
+  width:100%;margin:0 0 10px;
+  font-family:var(--body);font-size:15px;
+  padding:11px 12px;min-height:44px;
+  background:var(--paper-alt);
+  border:1px solid var(--paper-line);border-radius:4px;
+  color:var(--ink);
+}
+.filter::placeholder{color:var(--ink-faint);}
+.filter:focus{border-color:var(--turf);outline:none;background:#fff;}
+.filter-note{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;
+  font-size:10.5px;font-weight:700;color:var(--gold-deep);
+  display:block;margin:-4px 0 8px;min-height:13px;
+}
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+thead th{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+  font-size:10.5px;font-weight:700;color:var(--ink-faint);
+  text-align:left;padding:0 8px 6px;border-bottom:2px solid var(--ink);
+  white-space:nowrap;
+}
+tbody td{padding:9px 8px;border-bottom:1px solid var(--paper-line);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:0;}
+.t-time,.t-no{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.t-no{color:var(--ink-faint);width:34px;}
+.t-dmv{font-weight:600;}
+.t-clt{font-weight:600;text-align:right;}
+.t-res{
+  text-align:center;white-space:nowrap;
+  font-family:var(--display);font-weight:700;font-size:13px;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.t-res .w-dmv{color:var(--dmv);}
+.t-res .w-clt{color:var(--clt);}
+.t-res .w-half{color:var(--ink-faint);}
+.t-res .w-live{color:var(--live);}
+.t-res small{display:block;font-family:var(--body);font-weight:500;font-size:11.5px;letter-spacing:0;color:var(--ink-faint);text-transform:none;}
+tfoot td{
+  padding:10px 8px;border-top:2px solid var(--ink);
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;
+  font-size:12px;font-weight:700;
+}
+tfoot .pts{font-size:19px;text-align:center;font-variant-numeric:tabular-nums;}
+tfoot tr.overall td{background:var(--turf);color:#fff;border-top:0;}
+
+/* stacked card mode */
+@media (max-width:619px){
+  table.stackable thead{display:none;}
+  table.stackable, table.stackable tbody, table.stackable tr, table.stackable td{display:block;width:100%;}
+  table.stackable tbody tr{
+    border:1px solid var(--paper-line);border-radius:4px;
+    margin-bottom:8px;padding:10px 12px;background:var(--paper);
+  }
+  table.stackable tbody td{border:0;padding:2px 0;}
+  table.stackable .t-clt{text-align:left;}
+  table.stackable .t-res{text-align:left;margin-top:6px;padding-top:6px;border-top:1px dashed var(--paper-line);}
+  table.stackable td[data-l]::before{
+    content:attr(data-l);
+    display:block;font-family:var(--display);text-transform:uppercase;
+    letter-spacing:.1em;font-size:9.5px;font-weight:700;color:var(--ink-faint);
+  }
+  table.stackable .t-no{width:auto;}
+  table.stackable tfoot{display:block;}
+  table.stackable tfoot tr{display:flex;justify-content:space-between;gap:8px;}
+  table.stackable tfoot td{border-top:0;flex:1;}
+  table.stackable tfoot tr:first-child td{border-top:2px solid var(--ink);}
+}
+
+/* empty state */
+.empty{
+  border:1px dashed var(--paper-line);border-radius:4px;
+  padding:24px 16px;text-align:center;color:var(--ink-soft);
+  background:var(--paper);
+}
+.empty b{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.1em;font-size:13px;color:var(--ink);margin-bottom:4px;
+}
+.sec-turf .empty{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.18);color:var(--on-turf-soft);}
+.sec-turf .empty b{color:#fff;}
+
+/* ============================================================
+   ROSTER
+   ============================================================ */
+.teams{display:grid;gap:14px;}
+@media (min-width:700px){.teams{grid-template-columns:1fr 1fr;}}
+.team{border:1px solid var(--paper-line);border-radius:5px;overflow:hidden;background:var(--paper);margin:0;}
+.team > summary{padding:13px 14px;color:#fff;}
+.team.dmv > summary{background:var(--dmv);}
+.team.clt > summary{background:var(--clt);}
+.team > summary::after{color:#fff;opacity:.75;}
+.team > summary b{font-family:var(--display);text-transform:uppercase;font-size:20px;letter-spacing:.03em;}
+.team > summary span{
+  font-family:var(--display);text-transform:uppercase;font-size:11px;letter-spacing:.11em;
+  opacity:.85;margin-left:auto;padding-right:8px;font-weight:700;
+}
+.team .plist{border-top:1px solid var(--paper-line);}
+.plist{list-style:none;margin:0;padding:0;}
+.plist li{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  padding:8px 14px;border-bottom:1px solid var(--paper-line);font-size:14.5px;
+}
+.plist li:last-child{border-bottom:0;}
+.plist .hcp{
+  font-family:var(--display);font-weight:700;font-size:13px;
+  font-variant-numeric:tabular-nums;color:var(--ink-soft);
+}
+
+/* ============================================================
+   SOCIAL / TRAVEL / GENERIC LIST BLOCKS
+   ============================================================ */
+.stack{display:flex;flex-direction:column;gap:12px;}
+.card{
+  background:var(--paper);border:1px solid var(--paper-line);
+  border-radius:5px;padding:15px;
+}
+.sec-turf .card{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.12);}
+.card .when{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;
+  font-size:11px;font-weight:700;color:var(--gold-deep);
+}
+.sec-turf .card .when{color:var(--gold);}
+.card h4{font-family:var(--display);text-transform:uppercase;font-size:20px;font-weight:700;margin:3px 0 5px;line-height:1.05;}
+.card p{margin:0 0 9px;font-size:14.5px;color:var(--ink-soft);}
+.sec-turf .card p{color:var(--on-turf-soft);}
+.meta-line{
+  display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink-soft);margin-bottom:10px;
+}
+.meta-line b{color:var(--ink);font-weight:600;}
+.sec-turf .meta-line{color:var(--on-turf-soft);}
+.sec-turf .meta-line b{color:var(--on-turf);}
+
+.hotelgrid{display:grid;gap:10px;}
+@media (min-width:620px){.hotelgrid{grid-template-columns:1fr 1fr;}}
+.hotel{
+  border:1px solid var(--paper-line);border-radius:4px;padding:13px;background:var(--paper);
+  display:flex;flex-direction:column;gap:7px;
+}
+.hotel .hname{font-family:var(--display);text-transform:uppercase;font-size:17px;font-weight:700;line-height:1.05;}
+.hotel .hrate{font-family:var(--display);font-weight:700;font-size:15px;color:var(--gold-deep);font-variant-numeric:tabular-nums;}
+.hotel .haddr{font-size:13px;color:var(--ink-soft);}
+.hotel a.tel{font-family:var(--display);font-weight:700;font-size:15px;color:var(--turf);text-decoration:none;font-variant-numeric:tabular-nums;}
+
+/* the featured block */
+.hotel.feature{border:2px solid var(--turf);gap:10px;overflow:hidden;}
+.hotel.feature .hname{font-size:24px;}
+.hotel.feature .hrate{font-size:21px;}
+.hbadge{
+  align-self:flex-start;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.11em;
+  font-size:10.5px;font-weight:700;color:#26200C;background:var(--gold);
+  padding:4px 10px;border-radius:99px;
+}
+.hdrive{
+  display:flex;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);
+}
+.hdrive div{flex:1;padding:9px 0;border-right:1px solid var(--paper-line);}
+.hdrive div:last-child{border-right:0;}
+.hdrive span{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.1em;font-size:10px;font-weight:700;color:var(--ink-faint);
+}
+.hdrive b{
+  display:block;font-family:var(--display);font-size:18px;font-weight:700;
+  font-variant-numeric:tabular-nums;margin-top:1px;
+}
+
+/* the map */
+.mapwrap{
+  position:relative;aspect-ratio:4/3;max-height:520px;
+  border-radius:5px;overflow:hidden;
+  background:linear-gradient(166deg,#16523A,#0E3826 55%,#071E14);
+}
+.mapwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.maplegend{
+  display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;
+  font-size:13px;color:var(--ink-soft);
+}
+.maplegend span{display:flex;align-items:center;gap:7px;}
+.maplegend i{width:11px;height:11px;border-radius:50%;display:block;flex:none;}
+
+.airports table{font-size:14px;}
+.airports thead th{padding:10px 12px 8px;}
+.airports tbody td{padding:10px 12px;}
+.airports .code{font-family:var(--display);font-weight:700;font-size:17px;}
+@media (min-width:620px){
+  .airports{border:1px solid var(--paper-line);border-radius:5px;overflow:hidden;background:var(--paper);}
+}
+
+/* ---- visible section index, so the menu is not the only way through ---- */
+.jump{background:var(--paper-alt);border-bottom:1px solid var(--paper-line);}
+.jump-inner{
+  max-width:var(--max);margin:0 auto;padding:12px var(--pad);
+  display:flex;gap:7px;overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.jump-inner::-webkit-scrollbar{display:none;}
+.jump a{
+  flex:none;text-decoration:none;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;
+  font-size:13px;font-weight:700;color:var(--turf);
+  border:1px solid var(--paper-line);border-radius:99px;
+  padding:8px 15px;background:var(--paper);
+  min-height:38px;display:flex;align-items:center;
+}
+.jump a:hover{background:var(--turf);color:#fff;border-color:var(--turf);}
+@media (min-width:760px){.jump-inner{flex-wrap:wrap;overflow:visible;justify-content:center;}}
+
+/* ---- what you owe before you travel ---- */
+.todo{
+  margin-top:22px;border:1px solid var(--paper-line);border-radius:5px;
+  background:var(--paper);overflow:hidden;
+}
+.todo h3{
+  margin:0;padding:13px 15px;
+  background:var(--turf);color:#fff;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.07em;
+  font-size:17px;font-weight:700;
+}
+.todo ol{list-style:none;margin:0;padding:0;}
+.todo li{
+  display:flex;gap:13px;align-items:baseline;
+  padding:12px 15px;border-bottom:1px solid var(--paper-line);
+}
+.todo li:last-child{border-bottom:0;}
+.todo .by{
+  flex:none;min-width:74px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;
+  font-size:11px;font-weight:700;color:var(--gold-deep);
+}
+.todo .what{font-size:15px;line-height:1.4;}
+.todo .what a{color:var(--turf);font-weight:600;text-underline-offset:3px;}
+
+/* ---- typographic band, breaks up the scroll without needing a photo ---- */
+.band{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(110% 130% at 88% 0%, rgba(231,204,128,.13), transparent 60%),
+    linear-gradient(170deg,#0F3A27,#061A11);
+  color:var(--on-turf);
+  padding:54px var(--pad);text-align:center;
+}
+.band::after{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(112deg,rgba(255,255,255,.035) 0 1px,transparent 1px 18px);
+}
+.band .wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;}
+.band p{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:clamp(24px,6.4vw,40px);line-height:1.02;letter-spacing:-.005em;font-weight:700;
+  margin:0;color:#fff;text-wrap:balance;
+}
+.band p em{font-style:normal;color:var(--gold);}
+.band small{
+  display:block;margin-bottom:12px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.19em;
+  font-size:11.5px;font-weight:700;color:var(--gold);
+}
+.band-years{
+  display:flex;gap:0;margin-top:26px;
+  border-top:1px solid rgba(255,255,255,.14);
+}
+.band-years div{
+  flex:1;padding:14px 8px 0;
+  border-right:1px solid rgba(255,255,255,.14);
+}
+.band-years div:last-child{border-right:0;}
+.band-years span{
+  display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.11em;font-size:10px;font-weight:700;color:var(--on-turf-soft);
+}
+.band-years b{
+  display:block;margin-top:3px;
+  font-family:var(--display);font-size:clamp(14px,3.8vw,18px);font-weight:700;
+  color:var(--gold-bright);font-variant-numeric:tabular-nums;
+}
+.band-years div:last-child b{color:var(--on-turf-soft);}
+
+/* contacts */
+.contacts{display:grid;gap:9px;}
+@media (min-width:620px){.contacts{grid-template-columns:1fr 1fr;}}
+.contact{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  border:1px solid rgba(255,255,255,.14);border-radius:5px;
+  padding:13px 15px;text-decoration:none;
+  background:rgba(255,255,255,.045);
+}
+.contact:hover{background:rgba(255,255,255,.09);}
+.contact .who{font-size:14px;}
+.contact .who b{display:block;font-family:var(--display);text-transform:uppercase;font-size:16px;letter-spacing:.03em;color:#fff;}
+.contact .who span{color:var(--on-turf-soft);font-size:12px;}
+.contact .tel{
+  font-family:var(--display);font-weight:700;font-size:17px;color:var(--gold-bright);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.contact.email{
+  margin-top:9px;flex-wrap:wrap;gap:6px 12px;
+  border-color:rgba(200,164,77,.4);background:rgba(200,164,77,.07);
+}
+.contact.email .tel{white-space:normal;word-break:break-all;font-size:15px;}
+
+/* prizes */
+.prizegrid{display:grid;gap:11px;}
+@media (min-width:620px){.prizegrid{grid-template-columns:1fr 1fr;}}
+.prize{
+  border:1px solid var(--paper-line);border-radius:5px;padding:14px;background:var(--paper);
+  border-left:4px solid var(--gold);
+}
+.prize h4{font-family:var(--display);text-transform:uppercase;font-size:17px;font-weight:700;margin:0 0 4px;}
+.prize p{margin:0;font-size:14px;color:var(--ink-soft);}
+.prize .val{
+  font-family:var(--display);font-weight:700;font-size:14px;color:var(--gold-deep);
+  text-transform:uppercase;letter-spacing:.08em;margin-top:7px;display:block;
+}
+
+/* rules / accordion */
+details{
+  border:1px solid var(--paper-line);border-radius:5px;background:var(--paper);
+  margin-bottom:8px;
+}
+details[open]{border-color:var(--turf);}
+summary{
+  cursor:pointer;list-style:none;padding:14px 15px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;
+  font-size:16px;font-weight:700;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+summary::-webkit-details-marker{display:none;}
+summary::after{content:"+";font-size:22px;color:var(--gold-deep);line-height:1;}
+details[open] summary::after{content:"–";}
+details .dbody{padding:0 15px 15px;font-size:14.5px;color:var(--ink-soft);}
+details .dbody p{margin:0 0 9px;}
+details .dbody ul{margin:0 0 9px;padding-left:19px;}
+details .dbody li{margin-bottom:4px;}
+
+/* footer */
+footer{
+  background:var(--turf-deep);color:var(--on-turf-soft);
+  padding:34px var(--pad);text-align:center;
+}
+footer .wrap{max-width:var(--max);margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;}
+footer .flags{justify-content:center;margin:0;}
+footer p{margin:0;font-size:13px;}
+footer .cupname{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;
+  font-size:13px;font-weight:700;color:var(--gold);
+}
+
+/* ============================================================
+   RESULTS HUB — external links, photo gallery
+   ============================================================ */
+.reslink{
+  display:flex;gap:14px;align-items:center;
+  border:1px solid rgba(255,255,255,.14);border-radius:6px;
+  padding:15px;background:rgba(255,255,255,.045);
+  text-decoration:none;
+}
+.reslink + .reslink{margin-top:10px;}
+.reslink .ic{
+  flex:none;width:42px;height:42px;border-radius:9px;
+  background:rgba(200,164,77,.16);
+  display:flex;align-items:center;justify-content:center;color:var(--gold-bright);
+}
+.reslink .tx{flex:1;min-width:0;}
+.reslink .tx b{
+  display:block;font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;
+  font-size:16px;color:#fff;line-height:1.1;
+}
+.reslink .tx span{font-size:13px;color:var(--on-turf-soft);}
+.reslink .go{font-family:var(--display);font-weight:700;color:var(--gold-bright);font-size:22px;flex:none;}
+.reslink:hover{background:rgba(255,255,255,.09);border-color:rgba(200,164,77,.42);}
+
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:640px){.gallery{grid-template-columns:repeat(3,1fr);}}
+.gallery .imgslot{aspect-ratio:4/3;padding:12px;}
+.gallery .imgslot span{font-size:11px;}
+
+/* strokes / handicap line inside a pairings table */
+.t-strokes{
+  font-family:var(--body);font-weight:500;font-size:12px;line-height:1.35;
+  color:var(--gold-deep);white-space:normal;
+}
+.t-strokes.none{color:var(--ink-faint);}
+
+/* how-to-read note above a pairings table */
+.pairnote{
+  font-size:13px;color:var(--ink-soft);line-height:1.45;margin:0 0 12px;
+  background:var(--paper);border:1px solid var(--paper-line);border-left:3px solid var(--gold);
+  border-radius:4px;padding:10px 12px;
+}
+.pairnote b{color:var(--ink);font-weight:600;}
+
+/* running-lead sentence at the top of a results table */
+.leadline{
+  margin:0 0 12px;padding:11px 13px;
+  background:var(--turf);color:#fff;border-radius:5px;
+  font-size:14.5px;line-height:1.4;
+}
+.leadline b{font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;color:var(--gold-bright);}
+
+/* points cell in a results table */
+.t-pts{font-family:var(--display);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;color:var(--ink);}
+@media (max-width:619px){table.stackable .t-pts{text-align:left;}}
+.sec-turf .pairnote{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);color:var(--on-turf-soft);}
+.sec-turf .pairnote b{color:var(--on-turf);}
+
+/* course amenity line */
+.amenity{
+  display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--ink-soft);
+  background:var(--paper);border:1px solid var(--paper-line);border-left:3px solid var(--gold);
+  border-radius:4px;padding:10px 12px;
+}
+.amenity svg{flex:none;margin-top:2px;color:var(--gold-deep);}
+.amenity b{color:var(--ink);font-weight:600;}
+
+/* the day's team structure, stated once up top */
+.dayteam{
+  display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;
+  font-size:14px;color:var(--ink-soft);
+  border-bottom:1px solid var(--paper-line);padding-bottom:12px;
+}
+.dayteam b{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;
+  font-size:12px;color:var(--gold-deep);
+}
+.dayteam b.lead{
+  font-family:inherit;text-transform:none;letter-spacing:0;
+  font-size:14px;font-weight:700;color:var(--ink);
+}
+
+/* hole-in-one tradition note */
+.tradition{
+  margin-top:12px;background:var(--paper-alt);border:1px dashed var(--gold-deep);
+  border-radius:5px;padding:12px 14px;font-size:14px;color:var(--ink);line-height:1.45;
+}
+.tradition b{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;
+  color:var(--gold-deep);display:block;font-size:11.5px;margin-bottom:3px;
+}
+
+/* USGA rules card */
+.rulecard{
+  border:2px solid var(--turf);border-radius:6px;padding:18px;background:var(--paper);
+  display:flex;flex-direction:column;gap:12px;
+}
+.rulecard h3{font-family:var(--display);text-transform:uppercase;font-size:23px;margin:0;line-height:1;}
+.rulecard p{margin:0;color:var(--ink-soft);font-size:15px;line-height:1.5;}
+.rulecard .btn-row{margin-top:2px;}
+
+/* ---- golf spirit ---- */
+.spirit-box{
+  max-width:760px;margin:0 auto;text-align:center;
+  border:1px solid rgba(200,164,77,.45);border-radius:10px;
+  padding:clamp(28px,6vw,46px) clamp(22px,5vw,40px);
+  background:rgba(255,255,255,.045);
+}
+.spirit-box .spirit-icon{color:var(--gold);margin-bottom:14px;}
+.spirit-box h2{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:clamp(28px,6.5vw,42px);color:var(--gold);
+  margin:0 0 18px;line-height:1;letter-spacing:.02em;
+}
+.spirit-box p{color:var(--on-turf-soft);font-size:clamp(15px,2.4vw,17px);line-height:1.7;margin:0 auto;max-width:62ch;}
+.spirit-box .spirit-close{margin-top:16px;color:#fff;font-weight:600;}
+</style>
+
+<!-- =========================================================
+     NAV
+     ========================================================= -->
+<nav class="nav">
+  <div class="nav-inner">
+
+    <!-- desktop -->
+    <div class="nav-links">
+      <a href="#friday">Practice Round</a>
+      <a href="#day1">Day 1</a>
+      <a href="#day2">Day 2</a>
+      <!-- <a href="#results">Results</a> hidden until games are over -->
+      <a href="#map">Map</a>
+      <a href="#social">Social</a>
+      <a href="#contacts">Contacts</a>
+      <a href="#contributions">Contributions</a>
+    </div>
+
+    <!-- phones -->
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Open menu">
+      <i></i><i></i><i></i>
+    </button>
+  </div>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="menu" id="menu" data-open="false">
+  <div class="menu-inner">
+    <a href="#friday"><b>Practice Round</b><span>Practice rounds and sign-up</span></a>
+    <a href="#day1"><b>Day 1</b><span>Worthington Manor · cart vs cart</span></a>
+    <a href="#day2"><b>Day 2</b><span>Potomac Shores · one vs one</span></a>
+    <!-- <a href="#results"><b>Results</b><span>Scores, side games, photos</span></a> hidden until games are over -->
+    <a href="#map"><b>Map</b><span>Courses and the hotel</span></a>
+    <a href="#social"><b>Social</b><span>Dinners, the awards, the after-party</span></a>
+    <a href="#contacts"><b>Contacts</b><span>Phone numbers and email</span></a>
+    <a href="#contributions"><b>Contributions</b><span>Help cover tournament costs</span></a>
+  </div>
+</div>
+
+<button class="totop" id="totop" aria-label="Back to top">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<!-- =========================================================
+     HERO   [STATIC]
+     ========================================================= -->
+<header class="hero" id="top">
+
+  <!-- ===== HERO BACKGROUND =====================================
+       To use a real photograph, add one line inside this div:
+         <img src="images/hero.jpg" alt="">
+       Landscape, at least 2000px wide, ideally a low sun over a
+       fairway. It sits at 34% opacity behind the scrim, so almost
+       any decent course photo will work. Keep or delete the drawn
+       version below as you prefer; the photo covers it.
+       ========================================================== -->
+  <div class="hero-bg" aria-hidden="true">
+
+    <!-- Save a photo as site/images/hero.jpg and it takes over automatically.
+         If the file is not there, this line removes itself and the drawn
+         version below shows instead. Nothing ever appears broken. -->
+    <img src="images/hero.jpg" alt="" onerror="this.remove()">
+
+    <svg viewBox="0 0 1200 560" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0"   stop-color="#071F15"/>
+          <stop offset=".48" stop-color="#12402C"/>
+          <stop offset=".78" stop-color="#2A6B4E"/>
+          <stop offset="1"   stop-color="#4A8C68"/>
+        </linearGradient>
+        <radialGradient id="sun" cx=".76" cy=".54" r=".40">
+          <stop offset="0"   stop-color="#FFE9B0" stop-opacity=".85"/>
+          <stop offset=".22" stop-color="#E7CC80" stop-opacity=".38"/>
+          <stop offset="1"   stop-color="#E7CC80" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="grassA" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1D5D42"/><stop offset="1" stop-color="#123F2C"/>
+        </linearGradient>
+        <linearGradient id="grassB" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#17422F"/><stop offset="1" stop-color="#0C2C1F"/>
+        </linearGradient>
+        <filter id="haze" x="-20%" y="-40%" width="140%" height="180%">
+          <feGaussianBlur stdDeviation="13"/>
+        </filter>
+        <filter id="soft" x="-20%" y="-40%" width="140%" height="180%">
+          <feGaussianBlur stdDeviation="4"/>
+        </filter>
+      </defs>
+
+      <!-- sky and a low sun burning through.
+           The sun and flag sit between x 480 and 800 on purpose: on a phone the
+           artwork is cropped to roughly that middle band, so anything outside it
+           would only ever be seen on a laptop. -->
+      <rect width="1200" height="560" fill="url(#sky)"/>
+      <circle cx="792" cy="300" r="30" fill="#FFF0C4" opacity=".6" filter="url(#soft)"/>
+      <rect width="1200" height="560" fill="url(#sun)"/>
+
+      <!-- furthest treeline: pale, hazy, almost dissolved into the sky -->
+      <path filter="url(#haze)" fill="#3E7F5E" opacity=".38"
+        d="M0 330 Q 70 300 140 322 Q 210 294 285 318 Q 355 292 430 316 Q 505 288 580 314
+           Q 655 286 730 312 Q 805 288 880 314 Q 955 290 1030 312 Q 1105 288 1200 316
+           L1200 560 L0 560Z"/>
+
+      <!-- morning mist lying in the valley -->
+      <ellipse cx="600" cy="350" rx="720" ry="26" fill="#CFE6D8" opacity=".18" filter="url(#haze)"/>
+
+      <!-- middle treeline: a continuous scalloped mass, not a row of blobs -->
+      <path fill="#154A33" filter="url(#soft)"
+        d="M0 368 Q 45 338 92 360 Q 140 332 190 356 Q 240 328 292 352 Q 348 326 402 350
+           Q 458 330 512 352 Q 568 326 624 348 Q 680 324 738 348 Q 796 326 854 348
+           Q 912 322 970 346 Q 1028 324 1086 346 Q 1144 330 1200 350
+           L1200 560 L0 560Z"/>
+
+      <!-- a thinner mist band in front of it, separating the planes -->
+      <ellipse cx="600" cy="382" rx="780" ry="17" fill="#D8EDE0" opacity=".12" filter="url(#haze)"/>
+
+      <!-- upper fairway -->
+      <path d="M0 400 C 200 374 400 410 620 396 S 980 364 1200 398 L1200 560 L0 560Z" fill="url(#grassA)"/>
+
+      <!-- bunkers cut into the slope -->
+      <g fill="#0E3826" opacity=".4">
+        <ellipse cx="286" cy="424" rx="76" ry="13"/><ellipse cx="880" cy="416" rx="60" ry="11"/>
+      </g>
+      <g fill="#E8DCC0" opacity=".42">
+        <ellipse cx="286" cy="430" rx="74" ry="14"/><ellipse cx="880" cy="421" rx="58" ry="11"/>
+      </g>
+
+      <!-- the flag, low enough to sit clear of the headline -->
+      <g>
+        <line x1="536" y1="398" x2="536" y2="468" stroke="#06180F" stroke-width="4" opacity=".45"/>
+        <line x1="536" y1="398" x2="536" y2="468" stroke="#E7CC80" stroke-width="2.4"/>
+        <path d="M536 398 L576 409 L536 420Z" fill="#C8A44D"/>
+      </g>
+
+      <!-- mounding in front, the shape that makes a course read as a course -->
+      <path d="M0 452 C 150 424 320 462 470 448 S 760 418 940 446 S 1120 470 1200 452 L1200 560 L0 560Z"
+            fill="url(#grassB)"/>
+
+      <!-- foreground green, mown in stripes -->
+      <path d="M0 498 C 240 474 500 512 760 494 S 1080 468 1200 498 L1200 560 L0 560Z" fill="#0B2E1F"/>
+      <g opacity=".055" fill="#FFFFFF">
+        <rect x="0" y="500" width="1200" height="11"/><rect x="0" y="522" width="1200" height="11"/>
+        <rect x="0" y="544" width="1200" height="11"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-inner">
+
+    <div class="flags">
+      <!-- Nepal -->
+      <svg class="f-np" viewBox="0 0 60 73" aria-label="Nepal" role="img">
+        <path d="M2 71V2l40 34H14l30 26H2z" fill="#DC143C" stroke="#003893" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="17" cy="52" r="6.5" fill="#fff"/>
+        <path d="M17 12.5l2 4.5 4.5-1-2.5 4 4 2.8-4.6 1.4.5 4.7-3.9-2.6-3.9 2.6.5-4.7L9 23.8l4-2.8-2.5-4 4.5 1z" fill="#fff"/>
+      </svg>
+      <!-- United States -->
+      <svg class="f-us" viewBox="0 0 76 40" aria-label="United States" role="img">
+        <rect width="76" height="40" fill="#F7F4EB"/>
+        <g fill="#B22234">
+          <rect y="0" width="76" height="3.08"/><rect y="6.15" width="76" height="3.08"/>
+          <rect y="12.3" width="76" height="3.08"/><rect y="18.46" width="76" height="3.08"/>
+          <rect y="24.6" width="76" height="3.08"/><rect y="30.77" width="76" height="3.08"/>
+          <rect y="36.9" width="76" height="3.08"/>
+        </g>
+        <rect width="31" height="21.5" fill="#3C3B6E"/>
+      </svg>
+    </div>
+
+    <h1>DMV <span class="vs">vs</span> Charlotte <span class="yr">2026</span></h1>
+
+    <p class="hero-sub">The Annual Golf Invitational Tournament</p>
+    <p class="hero-year">Year Three</p>
+
+    <div class="hero-meta">
+      <div><b>Sept 12 and 13, 2026</b></div>
+      <div>Worthington Manor, MD</div>
+      <div>Potomac Shores, VA</div>
+    </div>
+
+    <!-- countdown swaps itself for the live score once play begins -->
+    <div class="countdown" id="countdown"></div>
+  </div>
+</header>
+
+<!-- =========================================================
+     LATEST UPDATE   [LIVE — one row of the spreadsheet]
+     ========================================================= -->
+<!-- HIDDEN until the tournament is over (was showing the dummy final score). Remove `hidden` to re-enable; the text comes from the Google Sheet announce row. -->
+<div class="update" id="updateBanner" hidden></div>
+
+<!-- =========================================================
+     SECTION INDEX   [STATIC]
+     ========================================================= -->
+<nav class="jump" aria-label="Jump to a section">
+  <div class="jump-inner">
+    <a href="#friday">Practice Round</a>
+    <a href="#day1">Day 1</a>
+    <a href="#day2">Day 2</a>
+    <!-- <a href="#results">Results</a> hidden until games are over -->
+    <a href="#map">Map</a>
+    <a href="#social">Social</a>
+    <a href="#contacts">Contacts</a>
+    <a href="#contributions">Contributions</a>
+  </div>
+</nav>
+
+<!-- =========================================================
+     THE WEEKEND   [STATIC]
+     ========================================================= -->
+<section class="sec-paper-alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title">A Three-Day Weekend of Golf</h2>
+    </div>
+
+    <div class="daycards">
+      <a class="daycard" href="#friday">
+        <div class="dc-day">Friday 11 Sep</div>
+        <div class="dc-title">Practice</div>
+        <p class="dc-venue">Your choice of either course. Optional.</p>
+        <div class="dc-tee"><span>Sign up by</span><b class="ph">4 Sep</b></div>
+        <div class="dc-go">Pick your course &rarr;</div>
+      </a>
+
+      <a class="daycard" href="#day1">
+        <div class="dc-day">Saturday 12 Sep</div>
+        <div class="dc-title">Day 1</div>
+        <p class="dc-venue">Worthington Manor &middot; Urbana, MD</p>
+        <div class="dc-tee"><span>First tee</span><b class="num">Noon</b></div>
+        <div class="dc-go">Four-ball &middot; pairings &rarr;</div>
+      </a>
+
+      <a class="daycard" href="#day2">
+        <div class="dc-day">Sunday 13 Sep</div>
+        <div class="dc-title">Day 2</div>
+        <p class="dc-venue">Potomac Shores &middot; Dumfries, VA</p>
+        <div class="dc-tee"><span>First tee</span><b class="num">10:30 AM</b></div>
+        <div class="dc-go">Singles &middot; pairings &rarr;</div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- =========================================================
+     FRIDAY PRACTICE   [STATIC cards + LIVE roster]
+     ========================================================= -->
+<section class="sec-paper" id="friday">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Friday 11 September</p>
+      <h2 class="sec-title">Practice rounds</h2>
+    </div>
+    <p class="lede">
+      Six consecutive tee times starting at 12 noon have been booked at each course for Friday Sept 11. The two courses will hold the Friday practice tee times until Sept 9. Please sign up in the linked google sheets if you want to practice on Friday at either course using the pre-booked tee times. These are first come, first served.
+    </p>
+    <p class="lede">
+      If you want to practice before or after the reserved practice time you can call the pro shops and book your practice rounds at your preferred times.
+    </p>
+    <p class="lede" style="margin-top:-10px;">
+      Worthington Manor: <a href="tel:+13018745400" style="text-decoration:none;color:var(--turf);font-weight:700;">301-874-5400</a><br>
+      Potomac Shores: <a href="tel:+15713833055" style="text-decoration:none;color:var(--turf);font-weight:700;">571-383-3055</a>
+    </p>
+
+    <div style="margin-top:4px;margin-bottom:24px;">
+      <a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/1QTUHM93yTkw0l920aPRfENmRFD9tmXfFqP33vABYOL0/edit?gid=0#gid=0" target="_blank" rel="noopener" style="width:100%;" id="practiceSignup">Sign up for a practice round</a>
+      <p style="font-size:13px;color:var(--ink-soft);margin:8px 0 0;text-align:center;">
+        Add your course, 9 or 18 holes, and a tee time after 10:30.
+      </p>
+    </div>
+
+    <div class="courses">
+
+      <!-- ---- Worthington Manor ---- -->
+      <div class="course">
+        <div class="imgslot">
+          <img src="images/worthington.jpg" alt="Worthington Manor Golf Club" onerror="this.remove()">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 21V3l11 4-11 4"/><circle cx="6" cy="21" r="1.5" fill="currentColor" stroke="none"/></svg>
+          <b>Photo needed</b>
+          <span>Save as <code>images/worthington.jpg</code> &middot; landscape, 1600&times;900 or larger.</span>
+        </div>
+        <div class="body">
+          <div>
+            <h4>Worthington Manor</h4>
+            <p class="where">8329 Fingerboard Rd, Urbana, MD 21704</p>
+          </div>
+          <div class="specs">
+            <div><span>Tee</span><b>Blue</b></div>
+            <div><span>Yards</span><b>6,525</b></div>
+            <div><span>Slope</span><b>144</b></div>
+            <div><span>Distinction</span><b>US Open Qualifying Site</b></div>
+          </div>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=8329+Fingerboard+Rd%2C+Urbana%2C+MD+21704" target="_blank" rel="noopener">Directions</a>
+            <a class="btn btn-ghost" href="https://www.worthingtonmanor.com/" target="_blank" rel="noopener">Course site</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- Potomac Shores ---- -->
+      <div class="course">
+        <div class="imgslot">
+          <img src="images/potomac-shores.jpg" alt="Potomac Shores Golf Club" onerror="this.remove()">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 21V3l11 4-11 4"/><circle cx="6" cy="21" r="1.5" fill="currentColor" stroke="none"/></svg>
+          <b>Photo needed</b>
+          <span>Save as <code>images/potomac-shores.jpg</code> &middot; landscape, 1600&times;900 or larger.</span>
+        </div>
+        <div class="body">
+          <div>
+            <h4>Potomac Shores</h4>
+            <p class="where">1750 Dunnington Place, Dumfries, VA 22026</p>
+          </div>
+          <div class="specs">
+            <div><span>Tee</span><b>Gold</b></div>
+            <div><span>Yards</span><b>6,355</b></div>
+            <div><span>Slope</span><b>144</b></div>
+            <div><span>Distinction</span><b>Jack Nicklaus designed</b></div>
+          </div>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=1750+Dunnington+Place%2C+Dumfries%2C+VA+22026" target="_blank" rel="noopener">Directions</a>
+            <a class="btn btn-ghost" href="https://www.potomacshoresgolfclub.com/" target="_blank" rel="noopener">Course site</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     DAY 1   [STATIC frame + LIVE tables]
+     ========================================================= -->
+<section class="sec-paper-alt" id="day1">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Saturday 12 September</p>
+      <h2 class="sec-title">Day 1 &middot; Worthington Manor</h2>
+    </div>
+
+    <div class="stack">
+
+      <div class="leaveby">
+        <div class="lb-txt">
+          <span>Captains' Welcome &amp; Player Briefing</span>
+          <b>11:30 AM Sharp</b>
+          <em>Please gather outside the clubhouse at 11:30 AM for a brief Captains' welcome and a quick rundown of the key rules and pace of play reminder.</em>
+        </div>
+      </div>
+
+      <div class="factgrid">
+        <div><span>First tee</span><b>Noon</b></div>
+        <div><span>Then every</span><b>10 min</b></div>
+        <div><span>Last cart</span><b class="ph">1:30 PM</b></div>
+        <div><span>Check-In and Payment Info</span><em>Green fees $119. Check-in and pay at pro-shop by 11:30 am</em></div>
+        <div><span>Range</span><b>Free and open early</b></div>
+        <div><span>Practice putting green</span><b>Yes</b></div>
+        <div><span>Practice chipping green</span><b>Yes</b></div>
+        <div><span>Restaurant and Bar</span><em>Direct line <a href="tel:+13018742005" style="text-decoration:none;color:var(--turf);font-weight:700;">301-874-2005</a></em></div>
+      </div>
+
+      <div class="dayteam">
+        <b>Format</b>
+        <span><b class="lead">Four-Ball Match Play.</b> Each two-player cart competes against an opposing two-player cart. All four golfers play their own ball throughout the hole, and each cart's lowest net score counts as its score for that hole. The cart with the lower best-ball score wins the hole.</span>
+      </div>
+
+      <div class="dayteam">
+        <b>Scoring</b>
+        <span><b class="lead">Win = 2, Tie = 1, Lose = 0.</b></span>
+      </div>
+
+      <div class="dayteam">
+        <b>Day 1 Handicap Procedure</b>
+        <span><b class="lead">Four-Ball Match Play (90%).</b><br>
+        For each four-player match, each golfer's Course Handicap will first be calculated for the tees being played. The golfer with the lowest Course Handicap in the foursome will play at 0 strokes. Each of the other three golfers will receive 90% of the difference between their Course Handicap and the lowest golfer's Course Handicap, rounded to the nearest whole stroke.<br><br>
+        Strokes will be taken on the course's designated handicap holes, beginning with Stroke Index #1, then #2, #3, and so on.<br><br>
+        <b class="lead">Example:</b> Course HCs of 8, 13, 18 and 23 play as 0, 5, 9 and 14 strokes, respectively.</span>
+      </div>
+
+      <div class="dayteam" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <b>Pairings</b>
+        <span>Pairings, tee times and strokes for Day 1 are on the Google Sheet.</span>
+        <a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/1QTUHM93yTkw0l920aPRfENmRFD9tmXfFqP33vABYOL0/edit?gid=0#gid=0" target="_blank" rel="noopener">See the pairings &rarr;</a>
+      </div>
+
+      <div class="dayteam" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <b>Rules</b>
+        <span>USGA Rules of Golf will govern all play except where specifically modified by the Tournament Local Rules.</span>
+        <a class="btn btn-ghost" href="https://www.usga.org/rules-hub.html" target="_blank" rel="noopener">See the USGA rules &rarr;</a>
+      </div>
+
+      <div class="dayteam">
+        <b>Tournament Local Rule</b>
+        <span>As a modification to USGA Rule 18, a lost ball may be dropped near the estimated point where the ball entered the area in which it was lost, no nearer the hole, with a one-stroke penalty. Players are not required to return to the location of the previous stroke.<br><br>
+        <b class="lead">Par-3 Lost Ball Local Rule:</b> If a player loses a ball on a Par-3 tee shot, the player has to hit another tee shot with a one-stroke penalty, unless the course provides a drop zone for that particular Par-3 hole.</span>
+      </div>
+
+      <div>
+        <h3 class="blk-title">Prize holes here</h3>
+        <div class="holes">
+          <div class="hole"><div class="hn"><i>18</i><span>Longest<b>Drive</b></span></div><div class="yd">Par 5 &middot; 502 y from the blues</div></div>
+          <div class="hole"><div class="hn"><i>8</i><span>Closest<b>To Pin</b></span></div><div class="yd">Par 3 &middot; 169 y from the blues</div></div>
+          <div class="hole"><div class="hn"><i>15</i><span>Closest<b>To Pin</b></span></div><div class="yd">Par 3 &middot; 170 y from the blues</div></div>
+        </div>
+      </div>
+
+      <div id="pace">
+        <h3 class="blk-title">Pace of Play</h3>
+        <div class="rulecard">
+          <p>To keep play moving and enjoyable for everyone:</p>
+          <ul style="margin:0;padding-left:20px;line-height:1.5;color:var(--ink);">
+            <li style="margin-bottom:7px;"><b>Pick up when your hole is decided.</b> If you can no longer win or tie the hole, pick up and move on.</li>
+            <li style="margin-bottom:7px;"><b>Limit lost ball searches to 3 minutes.</b></li>
+            <li style="margin-bottom:7px;"><b>Putt out</b> unless your opponent explicitly concedes the putt.</li>
+            <li style="margin-bottom:7px;"><b>Be ready to play.</b> Check yardage, select your club and prepare while others are playing.</li>
+            <li style="margin-bottom:7px;"><b>Use &ldquo;drop and go.&rdquo;</b> When cart partners&rsquo; balls are apart, drop one player with the needed club(s), then proceed to the other ball.</li>
+            <li style="margin-bottom:7px;"><b>Use ready golf</b> when appropriate and agreed upon.</li>
+            <li><b>Keep up with the group ahead.</b> If a full hole opens ahead of you, make every effort to close the gap.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     DAY 2   [STATIC frame + LIVE tables]
+     ========================================================= -->
+<section class="sec-paper" id="day2">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Sunday 13 September</p>
+      <h2 class="sec-title">Day 2 &middot; Potomac Shores</h2>
+    </div>
+
+    <div class="stack">
+
+      <div class="leaveby">
+        <div class="lb-txt">
+          <span style="font-size:clamp(26px,7.5vw,36px);letter-spacing:.04em;margin-bottom:2px;">Award Ceremony</span>
+          <b style="font-size:clamp(19px,5vw,24px);color:var(--gold);">5:00 PM &middot; Tidewater Grill</b>
+          <em>The Award Ceremony will be held at 5pm on Sunday, Sept 13th at the Tidewater Grill, located at the Potomac Shores Clubhouse. The last carts are expected to come in at 4:30pm. Following a light dinner (pizza, wings, salad) we will hold a brief award ceremony including trophy presentation to the winning team, prize-hole winners, and participation medals.</em>
+        </div>
+      </div>
+
+      <div class="factgrid">
+        <div><span>First tee</span><b>10:30 AM</b></div>
+        <div><span>Then every</span><b>10 min</b></div>
+        <div><span>Last group</span><b class="ph">12:00 PM</b></div>
+        <div><span>Check-In and Payment Info</span><em>Green fees $135. Check-in and payment at the pro-shop by 9:45am.</em></div>
+        <div><span>Range</span><b>Free and open early</b></div>
+        <div><span>Practice putting green</span><b>Yes</b></div>
+        <div><span>Practice chipping green</span><b>Yes</b></div>
+        <div><span>Tidewater Grill at Potomac Shores</span><em><a href="tel:+15713833055" style="text-decoration:none;color:var(--turf);font-weight:700;">571-383-3055</a></em></div>
+      </div>
+
+      <div class="dayteam">
+        <b>Format</b>
+        <span><b class="lead">Singles Match Play.</b> Each DMV player competes head-to-head against one Charlotte player. Four golfers tee off together, with two separate singles matches in each foursome. Each golfer plays their own ball, with handicap strokes applied where applicable; the lower net score wins the hole. The player who wins more holes over 18 holes wins the match. A match that is all square after 18 holes is halved.</span>
+      </div>
+
+      <div class="dayteam">
+        <b>Scoring</b>
+        <span><b class="lead">Win = 1, Tie = &frac12;, Lose = 0.</b></span>
+      </div>
+
+      <div class="dayteam">
+        <b>Day 2 Handicap Procedure</b>
+        <span><b class="lead">Singles Match Play (100%).</b><br>
+        For each match, both golfers' Course Handicaps will first be calculated for the tees being played. The golfer with the lower Course Handicap will play at 0 strokes. The higher-handicap golfer will receive 100% of the difference between the two Course Handicaps, rounded to the nearest whole stroke.<br><br>
+        Strokes will be taken on the course's designated handicap holes, beginning with Stroke Index #1, then #2, #3, and so on.<br><br>
+        <b class="lead">Example:</b> Course Handicaps of 10 and 18 play as 0 and 8 strokes, respectively.</span>
+      </div>
+
+      <div class="dayteam" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <b>Pairings</b>
+        <span>Pairings, tee times and strokes for Day 2 are on the Google Sheet.</span>
+        <a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/1QTUHM93yTkw0l920aPRfENmRFD9tmXfFqP33vABYOL0/edit?gid=0#gid=0" target="_blank" rel="noopener">See the pairings &rarr;</a>
+      </div>
+
+      <div class="dayteam" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <b>Rules</b>
+        <span>USGA Rules of Golf will govern all play except where specifically modified by the Tournament Local Rules.</span>
+        <a class="btn btn-ghost" href="https://www.usga.org/rules-hub.html" target="_blank" rel="noopener">See the USGA rules &rarr;</a>
+      </div>
+
+      <div class="dayteam">
+        <b>Tournament Local Rule</b>
+        <span>As a modification to USGA Rule 18, a lost ball may be dropped near the estimated point where the ball entered the area in which it was lost, no nearer the hole, with a one-stroke penalty. Players are not required to return to the location of the previous stroke.<br><br>
+        <b class="lead">Par-3 Lost Ball Local Rule:</b> If a player loses a ball on a Par-3 tee shot, the player has to hit another tee shot with a one-stroke penalty, unless the course provides a drop zone for that particular Par-3 hole.</span>
+      </div>
+
+      <div>
+        <h3 class="blk-title">Prize holes here</h3>
+        <div class="holes">
+          <div class="hole"><div class="hn"><i>16</i><span>Longest<b>Drive</b></span></div><div class="yd">Par 5 &middot; 545 y from the golds</div></div>
+          <div class="hole"><div class="hn"><i>6</i><span>Closest<b>To Pin</b></span></div><div class="yd">Par 3 &middot; 170 y from the golds</div></div>
+          <div class="hole"><div class="hn"><i>13</i><span>Closest<b>To Pin</b></span></div><div class="yd">Par 3 &middot; 185 y from the golds</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="blk-title">Pace of Play</h3>
+        <div class="rulecard">
+          <p>The same Pace of Play guidance applies today. Please keep play moving and enjoyable for everyone.</p>
+          <div class="btn-row"><a class="btn btn-ghost" href="#pace">See the Pace of Play guidance &rarr;</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     GOLF SPIRIT   [STATIC]
+     ========================================================= -->
+<section class="sec-turf" id="spirit">
+  <div class="wrap">
+    <div class="spirit-box">
+      <svg class="spirit-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 21V3l11 4-11 4"/><circle cx="6" cy="21" r="1.5" fill="currentColor" stroke="none"/></svg>
+      <h2>Golf Spirit</h2>
+      <p>Golf is a game built on honesty, integrity, respect, and sportsmanship. Players are expected to compete fairly, apply the rules honestly, show courtesy to opponents and fellow players, care for the course, and respect the traditions of the game.</p>
+      <p class="spirit-close">Compete hard, play fair, and enjoy the fellowship that makes golf and this tournament special.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     RESULTS   [LIVE board + external links + photos]
+     ========================================================= -->
+<!-- HIDDEN until the tournament is over. To publish results: remove the `hidden` attribute below, restore the three "Results" nav links, and unhide the #updateBanner. Live data pulls from the Google Sheet. -->
+<section class="sec-turf" id="results" hidden>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow on-dark">The Cup &amp; the prizes</p>
+      <h2 class="sec-title">Results</h2>
+    </div>
+    <p class="lede">Team score, low gross and net, and every side game. Most of it lands after the weekend.</p>
+
+    <div class="cup" id="cupBoard"></div>
+
+    <div class="cadence">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.7" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <div><b>Scores go up after each round, not during play.</b> Saturday evening and Sunday evening.</div>
+    </div>
+
+    <div class="stack" style="margin-top:12px;">
+      <details class="foldout">
+        <summary>
+          <span class="fo-title">Low Gross</span>
+          <span class="fo-meta" id="grossMeta"></span>
+        </summary>
+        <div class="fo-body"><ul class="lb" id="lbGross"></ul></div>
+      </details>
+
+      <details class="foldout">
+        <summary>
+          <span class="fo-title">Low Net</span>
+          <span class="fo-meta" id="netMeta"></span>
+        </summary>
+        <div class="fo-body"><ul class="lb" id="lbNet"></ul></div>
+      </details>
+
+      <details class="foldout">
+        <summary>
+          <span class="fo-title">Side Prizes &middot; Longest Drive &amp; Closest to Pin</span>
+          <span class="fo-meta" id="spMeta"></span>
+        </summary>
+        <div class="fo-body"><div id="sidePrizes"></div></div>
+      </details>
+    </div>
+
+    <h3 class="blk-title" style="margin-top:28px;color:#fff;">The full breakdown</h3>
+    <a class="reslink" href="https://results.gcaddie.ai/results/hog2026?wtab=sidegames" target="_blank" rel="noopener">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4Z"/><path d="M9 20h6"/><path d="M12 15v5"/></svg></span>
+      <span class="tx"><b>Live scoring &amp; side games</b><span>Full leaderboard, longest drive and closest to the pin, on GCaddie.</span></span>
+      <span class="go">&rarr;</span>
+    </a>
+    <a class="reslink" href="#results" rel="noopener" id="scoresheetLink">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span>
+      <span class="tx"><b>Every score, hole by hole</b><span>The complete card for each player. <span class="tbc">Link to confirm</span></span></span>
+      <span class="go">&rarr;</span>
+    </a>
+
+    <h3 class="blk-title" style="margin-top:28px;color:#fff;">Photos</h3>
+    <p class="lede" style="margin-bottom:14px;">A few from the weekend, once it wraps. The full set goes to Google Drive.</p>
+    <div class="gallery">
+      <div class="imgslot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg><b>Photo</b></div>
+      <div class="imgslot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg><b>Photo</b></div>
+      <div class="imgslot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg><b>Photo</b></div>
+      <div class="imgslot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg><b>Photo</b></div>
+      <div class="imgslot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg><b>Photo</b></div>
+      <div class="imgslot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg><b>Photo</b></div>
+    </div>
+    <div class="btn-row" style="margin-top:14px;">
+      <a class="btn btn-ghost-light" href="#results" rel="noopener" id="photoDriveLink">See all photos on Drive &middot; <span class="tbc">link to confirm</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     MAP   [STATIC — courses + the one hotel]
+     ========================================================= -->
+<section class="sec-paper-alt" id="map">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The courses</p>
+      <h2 class="sec-title">Map</h2>
+    </div>
+
+    <h3 class="blk-title" style="margin-top:0;">Everything on one map</h3>
+    <div class="mapwrap">
+      <iframe
+        src="https://www.google.com/maps/d/embed?mid=1eaRLLzacF1vLmPm7h-w8EEkMpcfIWRo&amp;ll=38.94709624866821%2C-77.27841363854904&amp;z=9"
+        title="DMV vs Charlotte tournament map" loading="lazy"></iframe>
+    </div>
+    <div class="maplegend">
+      <span><i style="background:#0F9D58"></i>Both golf courses</span>
+      <span><i style="background:#FF5252"></i>Wyndham Garden Manassas</span>
+      <span><i style="background:#9C27B0"></i>Dulles &amp; Reagan National</span>
+    </div>
+    <div class="btn-row" style="margin-top:12px;">
+      <a class="btn btn-primary" href="https://www.google.com/maps/d/viewer?ll=38.94709624866821%2C-77.27841363854904&amp;z=9&amp;mid=1eaRLLzacF1vLmPm7h-w8EEkMpcfIWRo" target="_blank" rel="noopener">Open the full map</a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SOCIAL   [STATIC]
+     ========================================================= -->
+<section class="sec-turf" id="social">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title">Social Events &amp; Accommodations</h2>
+    </div>
+
+    <div class="stack">
+
+      <div class="card" style="border-left:4px solid var(--gold);">
+        <h4>Accommodations</h4>
+        <p>Visiting players will be staying at <b>Wyndham Garden Manassas</b>, 10800 Vandor Lane, Manassas, VA 20109. Special discounted rates have been arranged courtesy of Vice-Captain Pragyan Mainali. Rooms have been reserved according to individual requests beginning Thursday, September 10, through Saturday, September 12.</p>
+        <div class="btn-row"><a class="btn btn-ghost-light" href="https://www.google.com/maps/dir/?api=1&amp;destination=10800+Vandor+Ln%2C+Manassas%2C+VA+20109" target="_blank" rel="noopener">Directions</a></div>
+      </div>
+
+      <div class="card">
+        <div class="when">Friday, September 11</div>
+        <h4>Free Evening</h4>
+        <p>Following Friday's practice rounds, visiting players will have the evening free to spend with friends and family or make their own plans.</p>
+      </div>
+
+      <div class="card">
+        <div class="when">Saturday, September 12</div>
+        <h4>Dinner &amp; Drinks</h4>
+        <p>Following completion of the Day 1 matches at Worthington Manor, visiting players are invited to dinner and drinks at <b>Wyndham Garden Manassas</b>.</p>
+      </div>
+
+      <div class="card">
+        <div class="when">Sunday, September 13</div>
+        <h4>Awards &amp; Closing Gathering</h4>
+        <p>Following completion of the Day 2 matches at Potomac Shores Golf Club, players will gather at the in-house <b>Tidewater Grill</b> for the tournament awards ceremony, presentation of individual prizes, and a light dinner. The gathering is expected to begin at approximately 4:30&ndash;5:00 PM.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     WEATHER & WEAR   [STATIC]
+     ========================================================= -->
+<section class="sec-paper" id="weather">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title">Weather &amp; Wear</h2>
+    </div>
+    <p class="lede">Mid-September in the DMV typically brings cool mornings and warm afternoons, with daytime highs around the upper 70s to low 80s. Rain is always possible.</p>
+    <div class="rulecard">
+      <p style="display:flex;gap:11px;align-items:flex-start;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--turf)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg>
+        <span><b>Pack:</b> Golf shirts, shorts/light pants, a light pullover or quarter-zip, rain jacket, golf shoes, hat and sunscreen.</span>
+      </p>
+      <p style="display:flex;gap:11px;align-items:flex-start;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--turf)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+        <span><b>Dress Code:</b> Proper golf attire and golf shoes are required. No denim/jeans, tank tops or metal spikes.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     CONTACTS   [STATIC]
+     ========================================================= -->
+<section class="sec-turf" id="contacts">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title">Important Tournament Contacts</h2>
+    </div>
+
+    <div class="contacts">
+      <a class="contact" href="tel:+17035896511">
+        <div class="who"><b>Anup Pahari</b><span>DMV Team Captain</span></div>
+        <div class="tel">703-589-6511</div>
+      </a>
+      <a class="contact" href="tel:+14145546699">
+        <div class="who"><b>Shailgram Dahal</b><span>Charlotte Team Captain</span></div>
+        <div class="tel">414-554-6699</div>
+      </a>
+      <a class="contact" href="tel:+17037950291">
+        <div class="who"><b>Pragyan Mainali</b><span>DMV Vice-captain</span></div>
+        <div class="tel">703-795-0291</div>
+      </a>
+      <a class="contact" href="tel:+13018745400">
+        <div class="who"><b>Worthington Manor</b><span>Pro shop &middot; Saturday</span></div>
+        <div class="tel">301-874-5400</div>
+      </a>
+      <a class="contact" href="tel:+15713833055">
+        <div class="who"><b>Potomac Shores</b><span>Pro shop &middot; Sunday</span></div>
+        <div class="tel">571-383-3055</div>
+      </a>
+      <a class="contact" href="tel:+17036594353">
+        <div class="who"><b>Wyndham Garden Manassas</b><span>Team hotel</span></div>
+        <div class="tel">703-659-4353</div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- =========================================================
+     CONTRIBUTIONS   [STATIC]
+     ========================================================= -->
+<section class="sec-paper" id="contributions">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title">Tournament Contributions</h2>
+    </div>
+    <p class="lede">Great golf, cold drinks, snacks, trophies, medals, and a proper awards gathering unfortunately don't grow on the fairways! To help cover tournament expenses other than green fees, we are asking each participant to contribute <b>$50</b>.</p>
+    <p class="lede">Your contribution will help cover drinks and snacks, trophies and medals, the awards ceremony and light dinner, and other tournament-related expenses.</p>
+    <div class="rulecard" style="align-items:center;text-align:center;">
+      <p style="margin:0;text-transform:uppercase;letter-spacing:.09em;font-size:12.5px;font-weight:700;color:var(--gold-deep);">Send your $50 contribution</p>
+      <p style="margin:0;font-size:16px;color:var(--ink);line-height:1.5;">You will receive an email with Venmo and Zelle links to make your contributions.</p>
+    </div>
+    <p class="lede" style="margin-top:20px;">Thank you for helping us make the weekend enjoyable, memorable, and reasonably well provisioned!</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="flags">
+      <svg viewBox="0 0 60 73" style="height:19px" aria-hidden="true"><path d="M2 71V2l40 34H14l30 26H2z" fill="#DC143C" stroke="#003893" stroke-width="4" stroke-linejoin="round"/><circle cx="17" cy="52" r="6.5" fill="#fff"/><path d="M17 12.5l2 4.5 4.5-1-2.5 4 4 2.8-4.6 1.4.5 4.7-3.9-2.6-3.9 2.6.5-4.7L9 23.8l4-2.8-2.5-4 4.5 1z" fill="#fff"/></svg>
+      <svg viewBox="0 0 76 40" style="height:19px" aria-hidden="true"><rect width="76" height="40" fill="#F7F4EB"/><g fill="#B22234"><rect y="0" width="76" height="3.08"/><rect y="6.15" width="76" height="3.08"/><rect y="12.3" width="76" height="3.08"/><rect y="18.46" width="76" height="3.08"/><rect y="24.6" width="76" height="3.08"/><rect y="30.77" width="76" height="3.08"/><rect y="36.9" width="76" height="3.08"/></g><rect width="31" height="21.5" fill="#3C3B6E"/></svg>
+    </div>
+    <p class="cupname">DMV vs Charlotte · Year Three</p>
+    <p>11 – 13 September 2026 · Worthington Manor &amp; Potomac Shores</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================================
+   LIVE DATA
+   ----------------------------------------------------------------------------
+   Everything below is what changes between now and Sunday night. Right now it
+   lives in this object. In the real build each key becomes one tab of a Google
+   Sheet the host owns, and the page reads the Sheet instead. Nothing else on
+   the page changes when that swap happens.
+
+   Every value here is PLACEHOLDER. Names, times and scores are invented so the
+   layout can be tested at real volume on a real phone.
+   ============================================================================ */
+
+const DATA = {
+
+  /* --- one row. the banner at the top of every screen ------------------- */
+  announce: {
+    time: "Sun 6:10 PM",
+    text: "Final. DMV take it 25½ to 24½ on the last match. Prizes at the clubhouse from 7:00. Safe drive home, Charlotte.",
+  },
+
+  /* --- the cup ---------------------------------------------------------- */
+  cup: {
+    status:       "Final · DMV retain the Cup",
+    totalPoints:  50,
+    pointsToWin:  25.5,
+    showScore:    true,
+  },
+
+  /* --- rosters (full names) --------------------------------------------- */
+  roster: {
+    dmv: [
+      ["Aashish Sharma", 8],
+      ["Bibek Thapa", 12],
+      ["Deepak Gurung", 6],
+      ["Prakash Lama", 15],
+      ["Rajesh Shrestha", 10],
+      ["Sunil Rai", 18],
+      ["Manoj Karki", 9],
+      ["Suman Adhikari", 14],
+      ["Anil Magar", 11],
+      ["Nabin Basnet", 20],
+      ["Kiran Poudel", 7],
+      ["Sanjay Bhattarai", 16],
+      ["Ramesh Tamang", 13],
+      ["Dipesh Limbu", 5],
+      ["Ujjwal Khadka", 19],
+      ["Sagar Subedi", 12],
+      ["Bishal Pandey", 17],
+      ["Milan Joshi", 8],
+      ["Rabin Maharjan", 22],
+      ["Prabin Dahal", 10],
+    ],
+    clt: [
+      ["Amit Patel", 7],
+      ["Binod Shah", 13],
+      ["Dinesh Rana", 9],
+      ["Pramod Malla", 16],
+      ["Rohan Chettri", 11],
+      ["Saroj Bista", 19],
+      ["Mahesh Ghale", 6],
+      ["Santosh Neupane", 14],
+      ["Ashok Sapkota", 12],
+      ["Niraj Koirala", 21],
+      ["Krishna Aryal", 8],
+      ["Subash Regmi", 17],
+      ["Rajan Pun", 10],
+      ["Dorje Thakuri", 5],
+      ["Umesh Baral", 18],
+      ["Sandeep Ojha", 15],
+      ["Bikash Kafle", 20],
+      ["Mohan Rijal", 9],
+      ["Ramesh Bhandari", 23],
+      ["Pankaj Acharya", 11],
+    ],
+  },
+
+  /* --- friday practice signups (Google Form -> this tab) ----------------
+     row = [name, course, holes (9|18), preferred tee (after 10:30)] ------- */
+  practice: {
+    updated: "Aug 18, 9:00 AM",
+    signups: [
+      ["Aashish Sharma", "Worthington Manor", 18, "After 11:00 AM"],
+      ["Deepak Gurung", "Worthington Manor", 18, "After 11:00 AM"],
+      ["Manoj Karki", "Worthington Manor", 9, "After 1:00 PM"],
+      ["Amit Patel", "Worthington Manor", 18, "After 10:30 AM"],
+      ["Dinesh Rana", "Worthington Manor", 18, "After 10:30 AM"],
+      ["Mahesh Ghale", "Worthington Manor", 9, "After 12:30 PM"],
+      ["Krishna Aryal", "Worthington Manor", 18, "After 11:30 AM"],
+      ["Bibek Thapa", "Potomac Shores", 18, "After 11:00 AM"],
+      ["Prakash Lama", "Potomac Shores", 9, "After 1:00 PM"],
+      ["Sunil Rai", "Potomac Shores", 18, "After 10:30 AM"],
+      ["Nabin Basnet", "Potomac Shores", 18, "After 12:00 PM"],
+      ["Binod Shah", "Potomac Shores", 18, "After 11:00 AM"],
+      ["Pramod Malla", "Potomac Shores", 9, "After 1:30 PM"],
+      ["Saroj Bista", "Potomac Shores", 18, "After 10:30 AM"],
+      ["Rajan Pun", "Potomac Shores", 18, "After 11:30 AM"],
+    ],
+  },
+
+  /* --- day 1: ten cart matches. names carry each player's strokes -------
+     '(=)' is the lowest handicap in the group; others get the difference,
+     USGA net best ball (Rule 9). ---------------------------------------- */
+  day1: {
+    pairUpdated: "Sep 10, 8:30 PM",
+    resUpdated:  "Sat 5:20 PM",
+    pairings: [
+      [1, "12:30 PM", "Deepak Gurung (=) / Aashish Sharma (2)", "Mahesh Ghale (=) / Amit Patel (1)"],
+      [2, "12:40 PM", "Dipesh Limbu (=) / Manoj Karki (4)", "Dorje Thakuri (=) / Krishna Aryal (3)"],
+      [3, "12:50 PM", "Kiran Poudel (=) / Bibek Thapa (5)", "Dinesh Rana (2) / Mohan Rijal (2)"],
+      [4, "1:00 PM", "Rajesh Shrestha (=) / Suman Adhikari (4)", "Binod Shah (3) / Rohan Chettri (1)"],
+      [5, "1:10 PM", "Milan Joshi (=) / Prabin Dahal (2)", "Pankaj Acharya (3) / Sandeep Ojha (7)"],
+      [6, "1:20 PM", "Anil Magar (1) / Sagar Subedi (2)", "Ashok Sapkota (2) / Rajan Pun (=)"],
+      [7, "1:30 PM", "Ramesh Tamang (=) / Prakash Lama (2)", "Santosh Neupane (1) / Umesh Baral (5)"],
+      [8, "1:40 PM", "Sanjay Bhattarai (=) / Bishal Pandey (1)", "Pramod Malla (=) / Subash Regmi (1)"],
+      [9, "1:50 PM", "Sunil Rai (=) / Ujjwal Khadka (1)", "Saroj Bista (1) / Bikash Kafle (2)"],
+      [10, "2:00 PM", "Nabin Basnet (=) / Rabin Maharjan (2)", "Niraj Koirala (1) / Ramesh Bhandari (3)"],
+    ],
+    /* cart, dmv score, clt score, winner: dmv | clt | half */
+    results: [
+      [1, 68, 70, "dmv"],
+      [2, 71, 71, "half"],
+      [3, 72, 69, "clt"],
+      [4, 70, 73, "dmv"],
+      [5, 74, 72, "clt"],
+      [6, 69, 74, "dmv"],
+      [7, 73, 73, "half"],
+      [8, 71, 75, "dmv"],
+      [9, 76, 74, "clt"],
+      [10, 72, 70, "clt"],
+    ],
+  },
+
+  /* --- day 2: twenty singles. names carry each player's strokes --------- */
+  day2: {
+    pairUpdated: "Sat 6:45 PM",
+    resUpdated:  "Sun 5:55 PM",
+    pairings: [
+      [1, "10:30 AM", "Dipesh Limbu (=)", "Dorje Thakuri (=)"],
+      [2, "10:30 AM", "Deepak Gurung (=)", "Mahesh Ghale (=)"],
+      [3, "10:40 AM", "Kiran Poudel (=)", "Amit Patel (=)"],
+      [4, "10:40 AM", "Aashish Sharma (=)", "Krishna Aryal (=)"],
+      [5, "10:50 AM", "Milan Joshi (=)", "Mohan Rijal (1)"],
+      [6, "10:50 AM", "Manoj Karki (=)", "Dinesh Rana (=)"],
+      [7, "11:00 AM", "Rajesh Shrestha (=)", "Pankaj Acharya (1)"],
+      [8, "11:00 AM", "Prabin Dahal (=)", "Rohan Chettri (1)"],
+      [9, "11:10 AM", "Anil Magar (=)", "Ashok Sapkota (1)"],
+      [10, "11:10 AM", "Sagar Subedi (2)", "Rajan Pun (=)"],
+      [11, "11:20 AM", "Bibek Thapa (=)", "Binod Shah (1)"],
+      [12, "11:20 AM", "Ramesh Tamang (=)", "Sandeep Ojha (2)"],
+      [13, "11:30 AM", "Suman Adhikari (=)", "Santosh Neupane (=)"],
+      [14, "11:30 AM", "Prakash Lama (=)", "Pramod Malla (1)"],
+      [15, "11:40 AM", "Sanjay Bhattarai (=)", "Subash Regmi (1)"],
+      [16, "11:40 AM", "Bishal Pandey (=)", "Umesh Baral (1)"],
+      [17, "11:50 AM", "Sunil Rai (=)", "Saroj Bista (1)"],
+      [18, "11:50 AM", "Ujjwal Khadka (=)", "Bikash Kafle (1)"],
+      [19, "12:00 PM", "Nabin Basnet (=)", "Niraj Koirala (1)"],
+      [20, "12:00 PM", "Rabin Maharjan (=)", "Ramesh Bhandari (1)"],
+    ],
+    /* match, result text, winner: dmv | clt | half */
+    results: [
+      [1, "3 & 2", "dmv"],
+      [2, "1 up", "clt"],
+      [3, "4 & 3", "dmv"],
+      [4, "halved", "half"],
+      [5, "2 & 1", "dmv"],
+      [6, "5 & 4", "clt"],
+      [7, "1 up", "dmv"],
+      [8, "2 & 1", "clt"],
+      [9, "3 & 1", "clt"],
+      [10, "2 up", "dmv"],
+      [11, "4 & 2", "dmv"],
+      [12, "1 up", "clt"],
+      [13, "6 & 5", "dmv"],
+      [14, "2 & 1", "clt"],
+      [15, "3 & 2", "clt"],
+      [16, "1 up", "clt"],
+      [17, "2 up", "dmv"],
+      [18, "4 & 3", "clt"],
+      [19, "1 up", "dmv"],
+      [20, "1 up", "dmv"],
+    ],
+  },
+
+  /* --- side prizes (Longest Drive & Closest to Pin) --------------------- */
+  sidePrizes: [
+    ["Longest Drive", "Worthington 18", "Dipesh Limbu", "312 y"],
+    ["Longest Drive", "Potomac Shores 16", "Dorje Thakuri", "318 y"],
+    ["Closest to Pin", "Worthington 8", "Mahesh Ghale", "4 ft 2 in"],
+    ["Closest to Pin", "Worthington 15", "Aashish Sharma", "6 ft 9 in"],
+    ["Closest to Pin", "Potomac Shores 6", "Krishna Aryal", "3 ft 1 in"],
+    ["Closest to Pin", "Potomac Shores 13", "Ramesh Tamang", "11 ft 4 in"],
+  ],
+
+  /* --- individual leaderboards ------------------------------------------ */
+  gross: [
+    ["Dipesh Limbu", "DMV", 143],
+    ["Dorje Thakuri", "CLT", 145],
+    ["Mahesh Ghale", "CLT", 147],
+    ["Deepak Gurung", "DMV", 148],
+    ["Krishna Aryal", "CLT", 149],
+  ],
+  net: [
+    ["Nabin Basnet", "DMV", 134],
+    ["Ramesh Bhandari", "CLT", 136],
+    ["Bikash Kafle", "CLT", 138],
+    ["Ujjwal Khadka", "DMV", 139],
+    ["Subash Regmi", "CLT", 140],
+  ],
+};
+
+/* ============================================================================
+   RENDER
+   ============================================================================ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const half = n => Number.isInteger(n) ? String(n) : Math.floor(n) + "½";
+
+/* ============================================================================
+   THE SPREADSHEET CONNECTION
+   ----------------------------------------------------------------------------
+   Leave `enabled: false` and the page runs on the DATA object above, which is
+   what you are looking at now.
+
+   To drive the site from a spreadsheet instead:
+     1. Open the workbook in Google Sheets.
+     2. File > Share > Publish to web.
+     3. Choose ONE tab, choose "Comma-separated values (.csv)", press Publish.
+     4. Paste the link it gives you next to the matching name below.
+     5. Repeat for each tab you want live. Blank ones keep using the data above.
+     6. Set enabled to true.
+
+   After that, editing the spreadsheet changes the website. Google refreshes a
+   published sheet every few minutes, so a change is visible within about five.
+   Nothing needs uploading, rebuilding or re-sending.
+
+   If the internet is down or a link is wrong, the page silently falls back to
+   the data above rather than showing an empty table.
+   ============================================================================ */
+
+const SHEET = {
+  enabled: false,
+  csv: {
+    announce:     "",
+    cup:          "",
+    roster:       "",
+    practice:     "",
+    day1Pairings: "",
+    day1Results:  "",
+    day2Pairings: "",
+    day2Results:  "",
+    sidePrizes:   "",
+    gross:        "",
+    net:          "",
+  },
+};
+
+/* ---- minimal CSV parser: handles quoted fields and embedded commas ---- */
+function parseCSV(text){
+  const rows = []; let row = [], field = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const ch = text[i];
+    if (q){
+      if (ch === '"' && text[i+1] === '"'){ field += '"'; i++; }
+      else if (ch === '"'){ q = false; }
+      else field += ch;
+    } else if (ch === '"'){ q = true; }
+    else if (ch === ","){ row.push(field.trim()); field = ""; }
+    else if (ch === "\n"){ row.push(field.trim()); rows.push(row); row = []; field = ""; }
+    else if (ch !== "\r"){ field += ch; }
+  }
+  row.push(field.trim());
+  if (row.some(v => v !== "")) rows.push(row);
+  return rows.filter(r => r.some(v => v !== ""));
+}
+
+/* drop the header row, keep the rest */
+const body = rows => rows.slice(1);
+const n = v => { const x = parseFloat(v); return isNaN(x) ? v : x; };
+
+/* map each tab's rows onto the shape the page already expects */
+const SHAPE = {
+  announce:     r => { DATA.announce = { time: r[0][0], text: r[0][1] }; },
+  cup:          r => { const m = Object.fromEntries(r.map(x => [x[0], x[1]]));
+                       if (m.status) DATA.cup.status = m.status;
+                       if (m.totalPoints) DATA.cup.totalPoints = n(m.totalPoints);
+                       if (m.pointsToWin) DATA.cup.pointsToWin = n(m.pointsToWin);
+                       if (m.showScore) DATA.cup.showScore = String(m.showScore).toLowerCase() === "true"; },
+  roster:       r => { DATA.roster.dmv = r.filter(x => x[1].toLowerCase() === "dmv").map(x => [x[0], x[2]]);
+                       DATA.roster.clt = r.filter(x => x[1].toLowerCase() === "clt").map(x => [x[0], x[2]]); },
+  practice:     r => { DATA.practice.signups = r.map(x => [x[0], x[1], x[2], x[3]]); },
+  day1Pairings: r => { DATA.day1.pairings = r.map(x => [n(x[0]), x[1], x[2], x[3]]); },
+  day1Results:  r => { DATA.day1.results  = r.map(x => [n(x[0]), n(x[1]), n(x[2]), x[3].toLowerCase()]); },
+  day2Pairings: r => { DATA.day2.pairings = r.map(x => [n(x[0]), x[1], x[2], x[3]]); },
+  day2Results:  r => { DATA.day2.results  = r.map(x => [n(x[0]), x[1], x[2].toLowerCase()]); },
+  sidePrizes:   r => { DATA.sidePrizes = r.map(x => [x[0], x[1], x[2], x[3]]); },
+  gross:        r => { DATA.gross = r.map(x => [x[0], x[1], n(x[2])]); },
+  net:          r => { DATA.net   = r.map(x => [x[0], x[1], n(x[2])]); },
+};
+
+async function loadFromSheet(){
+  if (!SHEET.enabled) return;
+  const jobs = Object.entries(SHEET.csv)
+    .filter(([, url]) => url)
+    .map(async ([key, url]) => {
+      try {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error(res.status);
+        SHAPE[key](body(parseCSV(await res.text())));
+      } catch (e) {
+        console.warn("Sheet tab '" + key + "' did not load, using built-in data.", e);
+      }
+    });
+  await Promise.all(jobs);
+  render();
+}
+
+/* ============================================================================
+   RENDER  — runs once on load, and again if spreadsheet data arrives
+   ============================================================================ */
+
+/* pointsPerWin weights a day. Day 1 team match = 3 (tie 1.5). Day 2 singles = 1 (tie 0.5). */
+function tally(rows, winnerIdx, pointsPerWin){
+  const w1 = pointsPerWin, wt = pointsPerWin / 2;
+  let d = 0, c = 0, played = 0;
+  rows.forEach(r => {
+    const w = r[winnerIdx];
+    if (w === "dmv"){ d += w1; played++; }
+    else if (w === "clt"){ c += w1; played++; }
+    else if (w === "half"){ d += wt; c += wt; played++; }
+  });
+  return { d, c, played };
+}
+
+let t1, t2, TOTAL, cdTimer;
+
+/* hero: countdown before the tournament, score once points are posted */
+function paintHero(){
+  const el = $("countdown");
+  /* Once there is a score, the hero stands down and the board below owns it.
+     One scoreboard, not two. */
+  if (DATA.cup.showScore){
+    clearInterval(cdTimer); cdTimer = null;
+    el.hidden = true; el.innerHTML = "";
+    return;
+  }
+  el.hidden = false;
+  const diff = new Date("2026-09-12T12:00:00-04:00") - new Date();
+  if (diff <= 0){ el.hidden = true; el.innerHTML = ""; return; }
+  const d = Math.floor(diff/864e5), h = Math.floor(diff/36e5)%24,
+        m = Math.floor(diff/6e4)%60, s = Math.floor(diff/1e3)%60;
+  el.innerHTML = [[d,"Days"],[h,"Hrs"],[m,"Min"],[s,"Sec"]]
+    .map(([v,l]) => `<div class="cd-cell"><b>${String(v).padStart(2,"0")}</b><span>${l}</span></div>`).join("");
+  if (!cdTimer) cdTimer = setInterval(paintHero, 1000);
+}
+
+function render(){
+
+t1 = tally(DATA.day1.results, 3, 3);   /* Day 1: each team match worth 3 points */
+t2 = tally(DATA.day2.results, 2, 1);   /* Day 2: each singles match worth 1 point */
+TOTAL = { d: t1.d + t2.d, c: t1.c + t2.c };
+
+paintHero();
+
+/* ---- announcement banner ---- */
+$("updateBanner").innerHTML = `
+  <div class="update-inner">
+    <span class="tag">Latest</span>
+    <p><b>${esc(DATA.announce.time)}</b>${esc(DATA.announce.text)}</p>
+  </div>`;
+
+/* ---- the cup board ---- */
+(function(){
+  const { totalPoints, pointsToWin, status } = DATA.cup;
+  const pctD = (TOTAL.d / totalPoints) * 100;
+  const pctC = (TOTAL.c / totalPoints) * 100;
+  const done = t1.played + t2.played;
+  const all  = DATA.day1.results.length + DATA.day2.results.length;
+
+  const chipFor = w => w === "dmv" ? "dmv" : w === "clt" ? "clt"
+                     : w === "half" ? "halved" : "pending";
+  const chips =
+    DATA.day1.results.map(r => `<div class="chip ${chipFor(r[3])}" title="Day 1, cart ${r[0]}">${r[0]}</div>`).join("") +
+    `<div style="flex-basis:100%;height:0"></div>` +
+    DATA.day2.results.map(r => `<div class="chip ${chipFor(r[2])}" title="Day 2, match ${r[0]}">${r[0]}</div>`).join("");
+
+  $("cupBoard").innerHTML = `
+    <div class="cup-status">
+      <span>${esc(status)}</span>
+      <span class="num">${done} of ${all} matches posted</span>
+    </div>
+
+    <div class="cup-scores">
+      <div class="cup-side dmv">
+        <div class="name">DMV</div>
+        <div class="pts">${half(TOTAL.d)}</div>
+      </div>
+      <div class="cup-target">Points to win<b class="num">${half(pointsToWin)}</b>of ${totalPoints}</div>
+      <div class="cup-side clt right">
+        <div class="name">Charlotte</div>
+        <div class="pts">${half(TOTAL.c)}</div>
+      </div>
+    </div>
+
+    <div class="meter">
+      <div class="fill-dmv" style="width:${pctD}%"></div>
+      <div class="fill-clt" style="width:${pctC}%"></div>
+      <div class="mid"></div>
+    </div>
+    <div class="meter-legend"><span>Day 1 &nbsp;${half(t1.d)}–${half(t1.c)}</span><span>Day 2 &nbsp;${half(t2.d)}–${half(t2.c)}</span></div>
+
+    <div class="chips">${chips}</div>
+    <div class="chip-key">
+      <span>Top row Day 1 · bottom row Day 2</span>
+      <span><i style="background:var(--dmv-on-dark)"></i>DMV</span>
+      <span><i style="background:var(--clt-on-dark)"></i>Charlotte</span>
+      <span><i style="background:var(--on-turf-soft)"></i>Halved</span>
+      <span><i style="background:rgba(255,255,255,.12)"></i>Not posted</span>
+    </div>`;
+})();
+
+/* ---- leaderboards ---- */
+const lbRows = (rows, unit) => rows.length
+  ? rows.map((r,i) => `<li><span class="pos num">${i+1}</span><span class="who">${esc(r[0])}<em>${esc(r[1])}</em></span><span class="val num">${esc(r[2])}</span></li>`).join("")
+  : `<li style="color:var(--on-turf-soft)">Posted after Saturday's round.</li>`;
+$("lbGross").innerHTML = lbRows(DATA.gross);
+$("lbNet").innerHTML   = lbRows(DATA.net);
+const leadMeta = rows => rows.length
+  ? `<b>${esc(rows[0][0])}</b>${rows[0][2]} &middot; ${rows.length} listed`
+  : "<b>Not posted</b>After Saturday";
+$("grossMeta").innerHTML = leadMeta(DATA.gross);
+$("netMeta").innerHTML   = leadMeta(DATA.net);
+
+/* ---- side prizes ---- */
+const spOpen = DATA.sidePrizes.filter(p => /open|^—$|^-$/i.test(p[2])).length;
+$("spMeta").innerHTML = DATA.sidePrizes.length
+  ? `<b>${DATA.sidePrizes.length - spOpen} claimed</b>${spOpen ? spOpen + " still open" : "All decided"}`
+  : "<b>Not posted</b>After Saturday";
+$("sidePrizes").innerHTML = DATA.sidePrizes.map(([prize,where,who,mark]) => `
+  <div class="sp-row">
+    <div class="lbl">${esc(prize)}<b>${esc(where)}</b></div>
+    <div class="mark"><b>${esc(mark)}</b><span>${esc(who)}</span></div>
+  </div>`).join("");
+
+/* rosters removed; the full registered list lives on the Google Sheet linked in the Players section */
+
+/* ---- empty state helper ---- */
+const emptyBox = (title, msg) => `<div class="empty"><b>${title}</b>${msg}</div>`;
+
+/* summary lines carry the headline numbers, so a closed panel still tells you something */
+const countMeta = (n, word, when) =>
+  `<b>${n} ${word}</b>Updated ${esc(when)}`;
+const scoreMeta = (t, when, played, total) => played
+  ? `<b>DMV ${half(t.d)} &ndash; ${half(t.c)} CLT</b>Updated ${esc(when)}`
+  : `<b>Not posted</b>${played}/${total} in`;
+
+/* Day 2 pairings & results now route to the Google Sheet; no in-page tables to paint. */
+
+} /* ---- end render ---- */
+
+render();          // paint immediately from the data in this file
+loadFromSheet();   // then upgrade to the spreadsheet, if one is connected
+
+/* ============================================================================
+   NAVIGATION, BACK TO TOP, AND THE NAME FILTER
+   ============================================================================ */
+
+/* add ?review to the address to highlight every unconfirmed value */
+if (/[?&]review/.test(location.search)) document.documentElement.setAttribute("data-review", "1");
+
+/* ---- hamburger ---- */
+(function(){
+  const burger = $("burger"), menu = $("menu"), scrim = $("scrim");
+  const setOpen = open => {
+    menu.dataset.open = open;
+    scrim.dataset.open = open;
+    burger.setAttribute("aria-expanded", open);
+    burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+  burger.addEventListener("click", () => setOpen(menu.dataset.open !== "true"));
+  scrim.addEventListener("click", () => setOpen(false));
+  menu.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
+  /* rotating a phone to landscape can cross into desktop layout mid-menu */
+  addEventListener("resize", () => { if (innerWidth >= 880) setOpen(false); });
+})();
+
+/* ---- smooth in-page navigation ----
+   Scroll to the target with JS instead of relying on the browser's default
+   "#anchor" jump. Sandboxed previews (the claude.ai artifact frame) block the
+   default jump as a top-frame navigation to a data: URL; this avoids that and
+   works identically on real hosting. scroll-padding-top keeps it clear of the
+   sticky nav. */
+(function(){
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute("href");
+    if (id.length < 2) return;
+    const target = document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    history.replaceState(null, "", id);
+  });
+})();
+
+/* ---- back to top ---- */
+(function(){
+  const btn = $("totop");
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  const check = () => btn.dataset.show = window.scrollY > 600;
+  addEventListener("scroll", check, { passive: true });
+  check();
+})();
+
+/* ---- which section am I in: highlights the matching menu row ---- */
+(function(){
+  const links = [...document.querySelectorAll(".menu a, .nav-links a")];
+  /* both navs share the same hrefs, so dedupe the targets and mark every
+     matching link, not just the first one found */
+  const targets = [...new Set(links.map(a => a.getAttribute("href")))]
+    .map(h => document.querySelector(h)).filter(Boolean);
+  if (!("IntersectionObserver" in window) || !targets.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      links.forEach(a => a.removeAttribute("aria-current"));
+      links.filter(a => a.getAttribute("href") === "#" + en.target.id)
+           .forEach(a => a.setAttribute("aria-current", "true"));
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  targets.forEach(t => io.observe(t));
+})();
+
+/* ---- type a name, see only your rows ---- */
+document.addEventListener("input", e => {
+  const box = e.target.closest(".filter");
+  if (!box) return;
+  const q = box.value.trim().toLowerCase();
+  const rows = document.querySelectorAll("#" + box.dataset.target + " tbody tr");
+  let hits = 0;
+  rows.forEach(r => {
+    const show = !q || r.innerText.toLowerCase().includes(q);
+    r.style.display = show ? "" : "none";
+    if (show) hits++;
+  });
+  const note = box.parentElement.querySelector(".filter-note");
+  if (note) note.textContent = q ? (hits ? hits + (hits === 1 ? " match" : " matches") : "No one by that name") : "";
+});
+</script>
